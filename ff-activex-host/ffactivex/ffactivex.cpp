@@ -43,12 +43,8 @@
 // Each domain name may start with a '*' to specify that sub domains are 
 // trusted as well
 // Note that a '.' is not enforced after the '*'
-static const char *TrustedLocations[] = {
-	"try.itstructures.com",
-	"webintg",
-	"webintg2",
-};
-static const unsigned int numTrustedLocations = sizeof(TrustedLocations) / sizeof(char *);
+static const char *TrustedLocations[] = {NULL};
+static const unsigned int numTrustedLocations = 0;
 
 static const char *LocalhostName = "localhost";
 static const bool TrustLocalhost = true;
