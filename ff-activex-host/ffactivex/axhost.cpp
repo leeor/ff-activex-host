@@ -278,8 +278,6 @@ CAxHost::CreateControl()
 	}
 
 	Site->m_bSupportWindowlessActivation = FALSE;
-
-	Site->SetSecurityPolicy(NULL);
 	Site->m_bSafeForScriptingObjectsOnly = TRUE;
 
 	Site->AddRef();
