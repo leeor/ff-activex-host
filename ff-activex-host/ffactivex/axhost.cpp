@@ -36,6 +36,59 @@
 #include "scriptable.h"
 #include "axhost.h"
 
+static const char *WellKnownProgIds[] = {
+	NULL
+};
+
+static const char *WellKnownClsIds[] = {
+	NULL
+};
+
+static const bool AcceptOnlyWellKnown = false;
+static const bool TrustWellKnown = false;
+
+static bool
+isWellKnownProgId(const char *progid)
+{
+	unsigned int i = 0;
+
+	if (!progid) {
+
+		return false;
+	}
+
+	while (WellKnownProgIds[i]) {
+
+		if (!strnicmp(WellKnownProgIds[i], progid, strlen(WellKnownProgIds[i]))) 
+			return true;
+
+		++i;
+	}
+
+	return false;
+}
+
+static bool
+isWellKnownClsId(const char *clsid)
+{
+	unsigned int i = 0;
+
+	if (!clsid) {
+
+		return false;
+	}
+
+	while (WellKnownClsIds[i]) {
+
+		if (!strnicmp(WellKnownClsIds[i], clsid, strlen(WellKnownClsIds[i]))) 
+			return true;
+
+		++i;
+	}
+
+	return false;
+}
+
 static LRESULT CALLBACK AxHostWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT result;
@@ -103,7 +156,8 @@ CAxHost::CAxHost(NPP inst):
 	Sink(NULL),
 	Site(NULL),
 	OldProc(NULL),
-	Props()
+	Props(),
+	isKnown(false)
 {
 }
 
@@ -204,6 +258,19 @@ CAxHost::setClsID(const char *clsid)
 	USES_CONVERSION;
 	LPOLESTR oleClsID = A2OLE(clsid);
 
+	if (AcceptOnlyWellKnown) {
+
+		if (isWellKnownClsId(clsid)) {
+
+			isKnown = true;
+		}
+		else {
+
+			log(instance, "AxHost.setClsID: the requested CLSID is not on the Well Known list");
+			return false;
+		}
+	}
+
     // Check the Internet Explorer list of vulnerable controls
     if (oleClsID && verifyClsID(oleClsID)) {
 
@@ -227,6 +294,19 @@ CAxHost::setClsIDFromProgID(const char *progid)
 	USES_CONVERSION;
 	LPOLESTR oleClsID = NULL;
 	LPOLESTR oleProgID = A2OLE(progid);
+
+	if (AcceptOnlyWellKnown) {
+
+		if (isWellKnownProgId(progid)) {
+
+			isKnown = true;
+		}
+		else {
+
+			log(instance, "AxHost.setClsIDFromProgID: the requested PROGID is not on the Well Known list");
+			return false;
+		}
+	}
 
 	hr = CLSIDFromProgID(oleProgID, &clsid);
 	if (FAILED(hr)) {
@@ -277,8 +357,17 @@ CAxHost::CreateControl()
 		return false;
 	}
 
-	Site->m_bSupportWindowlessActivation = FALSE;
-	Site->m_bSafeForScriptingObjectsOnly = TRUE;
+	Site->m_bSupportWindowlessActivation = false;
+
+	if (TrustWellKnown && isKnown) {
+
+		Site->SetSecurityPolicy(NULL);
+		Site->m_bSafeForScriptingObjectsOnly = false;
+	}
+	else {
+
+		Site->m_bSafeForScriptingObjectsOnly = true;
+	}
 
 	Site->AddRef();
 

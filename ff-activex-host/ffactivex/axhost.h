@@ -37,6 +37,7 @@ private:
 
 	NPP instance;
 	bool isValidClsID;
+	bool isKnown;
 
 protected:
 	// The window handle to our plugin area in the browser
