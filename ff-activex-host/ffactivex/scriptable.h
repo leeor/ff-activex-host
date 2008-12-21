@@ -205,7 +205,8 @@ public:
 
 			for (unsigned int i = 0; i < argCount; ++i) {
 
-				NPVar2Variant(&args[i], &vArgs[i]);
+				// copy the arguments in reverse order
+				NPVar2Variant(&args[i], &vArgs[argCount - i - 1]);
 			}
 		}
 
