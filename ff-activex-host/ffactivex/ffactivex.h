@@ -62,6 +62,7 @@ extern NPNetscapeFuncs NPNFuncs;
 
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_PROGID[] = "progid";
+static const char PARAM_CODEBASEURL [] = "codeBaseUrl";
 static const char PARAM_ONEVENT[] = "Event_";
 static const char PARAM_PARAM[] = "PARAM_";
 

@@ -104,13 +104,9 @@ log(NPP instance, char *message)
 }
 
 static bool
-VerifySiteLock(NPP instance)
+MatchURL2TrustedLocations(NPP instance, LPCTSTR matchUrl)
 {
 	USES_CONVERSION;
-	NPObject *globalObj = NULL;
-	NPIdentifier identifier;
-	NPVariant varLocation;
-	NPVariant varHref;
 	bool rc = false;
 	CUrl url;
 
@@ -119,39 +115,10 @@ VerifySiteLock(NPP instance)
 		return true;
 	}
 
-	// Get the window object.
-	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &globalObj);
-	// Create a "location" identifier.
-	identifier = NPNFuncs.getstringidentifier("location");
-
-	// Get the location property from the window object (which is another object).
-	rc = NPNFuncs.getproperty(instance, globalObj, identifier, &varLocation);
-	NPNFuncs.releaseobject(globalObj);
-	if (!rc){
-
-		log(instance, "AxHost.VerifySiteLock: could not get the location from the global object");
-		return false;
-	}
-
-	// Get a pointer to the "location" object.
-	NPObject *locationObj = varLocation.value.objectValue;
-	// Create a "href" identifier.
-	identifier = NPNFuncs.getstringidentifier("href");
-	// Get the location property from the location object.
-	rc = NPNFuncs.getproperty(instance, locationObj, identifier, &varHref);
-	NPNFuncs.releasevariantvalue(&varLocation);
+	rc = url.CrackUrl(matchUrl, ATL_URL_DECODE);
 	if (!rc) {
 
-		log(instance, "AxHost.VerifySiteLock: could not get the href from the location property");
-		return false;
-	}
-
-	rc = url.CrackUrl(A2W(varHref.value.stringValue.utf8characters), ATL_URL_DECODE);
-	NPNFuncs.releasevariantvalue(&varHref);
-
-	if (!rc) {
-
-		log(instance, "AxHost.VerifySiteLock: failed to parse the current location URL");
+		log(instance, "AxHost.MatchURL2TrustedLocations: failed to parse the current location URL");
 		return false;
 	}
 
@@ -188,8 +155,55 @@ VerifySiteLock(NPP instance)
 		}
 	}
 
-	log(instance, "AxHost.VerifySiteLock: current location is not trusted");
 	return false;
+}
+
+static bool
+VerifySiteLock(NPP instance)
+{
+	USES_CONVERSION;
+	NPObject *globalObj = NULL;
+	NPIdentifier identifier;
+	NPVariant varLocation;
+	NPVariant varHref;
+	bool rc = false;
+
+	// Get the window object.
+	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &globalObj);
+	// Create a "location" identifier.
+	identifier = NPNFuncs.getstringidentifier("location");
+
+	// Get the location property from the window object (which is another object).
+	rc = NPNFuncs.getproperty(instance, globalObj, identifier, &varLocation);
+	NPNFuncs.releaseobject(globalObj);
+	if (!rc){
+
+		log(instance, "AxHost.VerifySiteLock: could not get the location from the global object");
+		return false;
+	}
+
+	// Get a pointer to the "location" object.
+	NPObject *locationObj = varLocation.value.objectValue;
+	// Create a "href" identifier.
+	identifier = NPNFuncs.getstringidentifier("href");
+	// Get the location property from the location object.
+	rc = NPNFuncs.getproperty(instance, locationObj, identifier, &varHref);
+	NPNFuncs.releasevariantvalue(&varLocation);
+	if (!rc) {
+
+		log(instance, "AxHost.VerifySiteLock: could not get the href from the location property");
+		return false;
+	}
+
+	rc = MatchURL2TrustedLocations(instance, A2W(varHref.value.stringValue.utf8characters));
+	NPNFuncs.releasevariantvalue(&varHref);
+
+	if (false == rc) {
+
+		log(instance, "AxHost.VerifySiteLock: current location is not trusted");
+	}
+
+	return rc;
 }
 
 /* 
@@ -283,6 +297,17 @@ NPP_New(NPMIMEType pluginType,
 				// Add named parameter to list
 				CComVariant v(paramValue);
 				host->Props.AddNamedProperty(paramName, v);
+			}
+			else if(0  == strnicmp(argn[i], PARAM_CODEBASEURL, strlen(PARAM_CODEBASEURL))) {
+
+				if (MatchURL2TrustedLocations(instance, A2W(argv[i]))) {
+
+					host->setCodeBaseUrl(A2W(argv[i]));
+				}
+				else {
+
+					log(instance, "AxHost.NPP_New: codeBaseUrl contains an untrusted location");
+				}
 			}
 		}
 

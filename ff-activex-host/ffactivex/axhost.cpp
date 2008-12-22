@@ -157,7 +157,8 @@ CAxHost::CAxHost(NPP inst):
 	Site(NULL),
 	OldProc(NULL),
 	Props(),
-	isKnown(false)
+	isKnown(false),
+	CodeBaseUrl(NULL)
 {
 }
 
@@ -286,6 +287,11 @@ CAxHost::setClsID(const char *clsid)
 	return false;
 }
 
+void CAxHost::setCodeBaseUrl(LPCWSTR codeBaseUrl)
+{
+	CodeBaseUrl = codeBaseUrl;
+}
+
 bool
 CAxHost::setClsIDFromProgID(const char *progid)
 {
@@ -373,7 +379,7 @@ CAxHost::CreateControl()
 
 	// Create the object
 	HRESULT hr;
-	hr = Site->Create(ClsID, Props);
+	hr = Site->Create(ClsID, Props, CodeBaseUrl);
 
 	if (FAILED(hr)) {
 

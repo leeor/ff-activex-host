@@ -46,6 +46,7 @@ protected:
 
 	// The class/prog id of the control
 	CLSID ClsID;
+	LPCWSTR CodeBaseUrl;
 
 	CControlEventSinkInstance *Sink;
 
@@ -63,6 +64,7 @@ public:
 	bool verifyClsID(LPOLESTR oleClsID);
 	bool setClsID(const char *clsid);
 	bool setClsIDFromProgID(const char *progid);
+	void setCodeBaseUrl(LPCWSTR clsid);
 	bool hasValidClsID();
 
 	bool CreateControl();
