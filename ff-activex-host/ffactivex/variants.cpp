@@ -40,7 +40,7 @@
 
 extern NPNetscapeFuncs NPNFuncs;
 
-static BSTR 
+BSTR 
 Utf8StringToBstr(LPCSTR szStr, int iSize)
 { 
 	BSTR bstrVal; 

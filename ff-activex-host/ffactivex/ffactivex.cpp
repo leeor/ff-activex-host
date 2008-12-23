@@ -275,7 +275,7 @@ NPP_New(NPMIMEType pluginType,
 			else if (0 == strnicmp(argn[i], PARAM_PARAM, strlen(PARAM_PARAM))) {
 
 				CComBSTR paramName = argn[i] + strlen(PARAM_PARAM);
-				CComBSTR paramValue(A2W(argv[i]));
+				CComBSTR paramValue(Utf8StringToBstr(argv[i], strlen(argv[i])));
 
 				// Check for existing params with the same name
 				BOOL bFound = FALSE;
