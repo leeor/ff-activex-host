@@ -40,6 +40,39 @@
 
 extern NPNetscapeFuncs NPNFuncs;
 
+static BSTR 
+Utf8StringToBstr(LPCSTR szStr, int iSize)
+{ 
+	BSTR bstrVal; 
+    // Chars required for string
+	int iReq;
+
+	// Account for terminating 0. 
+    if (iSize != -1) {
+
+		++iSize; 
+	}
+
+	if ((iReq = MultiByteToWideChar(CP_UTF8, 0, szStr, iSize, 0, 0)) ==  0) {
+
+		return (0); 
+	}
+
+    if ((bstrVal = ::SysAllocStringLen(0, iReq)) == 0) {
+
+		return (0); 
+	}
+
+	// Convert into the buffer. 
+	if (MultiByteToWideChar(CP_UTF8, 0, szStr, iSize, bstrVal, iReq) == 0) {
+
+		::SysFreeString(bstrVal); 
+		return 0; 
+	} 
+
+	return (bstrVal); 
+}
+
 void
 Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 {
@@ -168,7 +201,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var)
 
 	case NPVariantType_String:
 		var->vt = VT_BSTR;
-		var->bstrVal = SysAllocString(A2OLE(npvar->value.stringValue.utf8characters));
+		var->bstrVal = Utf8StringToBstr(npvar->value.stringValue.utf8characters, npvar->value.stringValue.utf8length);
 		break;
 
 	case NPVariantType_Object:
@@ -178,3 +211,4 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var)
 		break;
 	}
 }
+
