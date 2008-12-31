@@ -259,17 +259,14 @@ CAxHost::setClsID(const char *clsid)
 	USES_CONVERSION;
 	LPOLESTR oleClsID = A2OLE(clsid);
 
-	if (AcceptOnlyWellKnown) {
+	if (isWellKnownClsId(clsid)) {
 
-		if (isWellKnownClsId(clsid)) {
+		isKnown = true;
+	}
+	else if (AcceptOnlyWellKnown) {
 
-			isKnown = true;
-		}
-		else {
-
-			log(instance, "AxHost.setClsID: the requested CLSID is not on the Well Known list");
-			return false;
-		}
+		log(instance, "AxHost.setClsID: the requested CLSID is not on the Well Known list");
+		return false;
 	}
 
     // Check the Internet Explorer list of vulnerable controls
