@@ -406,7 +406,8 @@ CAxHost::CreateControl()
 	Sink->AddRef();
 	Sink->instance = instance;
 	hr = Sink->SubscribeToEvents(control);
-	 
+	control->Release();
+
 	if (FAILED(hr)) {
 
 		LPSTR lpMsgBuf;

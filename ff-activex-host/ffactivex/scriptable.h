@@ -77,6 +77,8 @@ private:
 		disp->GetIDsOfNames(IID_NULL, &oleName, 1, LOCALE_SYSTEM_DEFAULT, &dID);
 		if (dID != -1) {
 
+			unsigned int i;
+
 			ITypeInfoPtr info;
 			disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &info);
 			if (!info) {
@@ -92,22 +94,45 @@ private:
 				return -1;
 			}
 
-			FUNCDESC *fDesc;
+			if (invKind & INVOKE_FUNC) {
 
-			for (unsigned int i = 0; 
-				 (i < attr->cFuncs) 
-					&& !found; 
-				 ++i) {
+				FUNCDESC *fDesc;
 
-				HRESULT hr = info->GetFuncDesc(i, &fDesc);
-				if (   SUCCEEDED(hr) 
-					&& fDesc 
-					&& (fDesc->memid == dID)) {
+				for (i = 0; 
+					 (i < attr->cFuncs) 
+						&& !found; 
+					 ++i) {
 
-					if (invKind & fDesc->invkind)
-						found = true;
+					HRESULT hr = info->GetFuncDesc(i, &fDesc);
+					if (   SUCCEEDED(hr) 
+						&& fDesc 
+						&& (fDesc->memid == dID)) {
+
+						if (invKind & fDesc->invkind)
+							found = true;
+					}
+					info->ReleaseFuncDesc(fDesc);
 				}
-				info->ReleaseFuncDesc(fDesc);
+			}
+
+			if (invKind & ~INVOKE_FUNC) {
+
+				VARDESC *vDesc;
+
+				for (i = 0; 
+					 (i < attr->cVars) 
+						&& !found; 
+					 ++i) {
+
+					HRESULT hr = info->GetVarDesc(i, &vDesc);
+					if (   SUCCEEDED(hr) 
+						&& vDesc 
+						&& (vDesc->memid == dID)) {
+
+						found = true;
+					}
+					info->ReleaseVarDesc(vDesc);
+				}
 			}
 			info->ReleaseTypeAttr(attr);
 		}
@@ -141,10 +166,10 @@ public:
 		instance(NULL) {
 	}
 
-	~Scriptable() {}
+	~Scriptable() {control->Release();}
 
-	void setControl(IUnknown *unk) {control = unk; control->AddRef();}
-	void setControl(IDispatch *disp) {disp->QueryInterface(IID_IUnknown, (void **)&control); control->AddRef();}
+	void setControl(IUnknown *unk) {control = unk;}
+	void setControl(IDispatch *disp) {disp->QueryInterface(IID_IUnknown, (void **)&control);}
 	void setInstance(NPP inst) {instance = inst;}
 
 	void Invalidate() {invalid = true;}
