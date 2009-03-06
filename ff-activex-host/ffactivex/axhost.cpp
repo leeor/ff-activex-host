@@ -344,7 +344,7 @@ CAxHost::hasValidClsID()
 }
 
 bool
-CAxHost::CreateControl()
+CAxHost::CreateControl(bool subscribeToEvents)
 {
 	if (!isValidClsID) {
 
@@ -398,8 +398,13 @@ CAxHost::CreateControl()
 		return false;
 	}
 
-	IUnknown *control;
+	IUnknown *control = NULL;
 	Site->GetControlUnknown(&control);
+	if (!control) {
+
+		log(instance, "AxHost.CreateControl: failed to create control (was it just downloaded?)");
+		return false;
+	}
 
 	// Create the event sink
 	CControlEventSinkInstance::CreateInstance(&Sink);
@@ -408,7 +413,7 @@ CAxHost::CreateControl()
 	hr = Sink->SubscribeToEvents(control);
 	control->Release();
 
-	if (FAILED(hr)) {
+	if (FAILED(hr) && subscribeToEvents) {
 
 		LPSTR lpMsgBuf;
 		DWORD dw = GetLastError(); 

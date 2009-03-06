@@ -67,7 +67,7 @@ public:
 	void setCodeBaseUrl(LPCWSTR clsid);
 	bool hasValidClsID();
 
-	bool CreateControl();
+	bool CreateControl(bool subscribeToEvents);
 
 	bool AddEventHandler(wchar_t *name, wchar_t *handler);
 

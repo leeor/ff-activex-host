@@ -324,7 +324,8 @@ NPP_New(NPMIMEType pluginType,
 
 		instance->pdata = host;
 
-		if (!host->CreateControl()) {
+		// if no events were requested, don't fail if subscribing fails
+		if (!host->CreateControl(events.GetSize() ? true : false)) {
 
 			rc = NPERR_GENERIC_ERROR;
 			log(instance, "AxHost.NPP_New: failed to create the control");
