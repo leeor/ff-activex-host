@@ -39,6 +39,8 @@
 #include "axhost.h"
 #include "atlutil.h"
 
+#include "authorize.h"
+
 // A list of trusted domains
 // Each domain name may start with a '*' to specify that sub domains are 
 // trusted as well
@@ -233,13 +235,26 @@ NPP_New(NPMIMEType pluginType,
 		return NPERR_INVALID_PARAM;
 	}
 
+#ifdef NO_REGISTRY_AUTHORIZE
 	// Verify that we're running from a trusted location
 	if (!VerifySiteLock(instance)) {
 
-		return NPERR_GENERIC_ERROR;
+	  return NPERR_GENERIC_ERROR;
 	}
+#endif
 
 	instance->pdata = NULL;
+
+#ifndef NO_REGISTRY_AUTHORIZE
+
+	if (!TestAuthorization (instance,
+		   				    argc,
+						    argn,
+							argv)) {
+      return NPERR_GENERIC_ERROR;
+	  }
+
+#endif
 
 	// TODO: Check the pluginType to make sure we're being called with the rigth MIME Type
 

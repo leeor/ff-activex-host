@@ -36,6 +36,8 @@
 #include "scriptable.h"
 #include "axhost.h"
 
+#ifdef NO_REGISTRY_AUTHORIZE
+
 static const char *WellKnownProgIds[] = {
 	NULL
 };
@@ -44,12 +46,16 @@ static const char *WellKnownClsIds[] = {
 	NULL
 };
 
+#endif
+
 static const bool AcceptOnlyWellKnown = false;
 static const bool TrustWellKnown = false;
 
 static bool
 isWellKnownProgId(const char *progid)
 {
+#ifdef NO_REGISTRY_AUTHORIZE
+
 	unsigned int i = 0;
 
 	if (!progid) {
@@ -66,11 +72,15 @@ isWellKnownProgId(const char *progid)
 	}
 
 	return false;
+#else
+	return true;
+#endif
 }
 
 static bool
 isWellKnownClsId(const char *clsid)
 {
+#ifdef NO_REGISTRY_AUTHORIZE
 	unsigned int i = 0;
 
 	if (!clsid) {
@@ -87,6 +97,9 @@ isWellKnownClsId(const char *clsid)
 	}
 
 	return false;
+#else
+	return true;
+#endif
 }
 
 static LRESULT CALLBACK AxHostWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)

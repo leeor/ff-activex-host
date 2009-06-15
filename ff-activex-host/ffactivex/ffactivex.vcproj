@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ffactivex"
 	ProjectGUID="{B9ACDB28-1D44-4392-A2F1-83CFFD0C3376}"
 	RootNamespace="ffactivex"
@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\src\mozilla\objdir\dist\sdk\include, c:\src\mozilla\objdir\dist\include\xpcom, c:\src\mozilla\objdir\dist\include\java, c:\src\mozilla\objdir\dist\include\plugin, c:\src\mozilla\objdir\dist\include\string, c:\src\mozilla\objdir\dist\include\dom, c:\src\mozilla\objdir\dist\include\content, c:\src\mozilla\objdir\dist\include\layout, c:\src\mozilla\objdir\dist\include\widget, c:\src\mozilla\objdir\dist\include\gfx, c:\src\mozilla\objdir\dist\include\js, c:\src\mozilla\objdir\dist\include\pref, c:\src\mozilla\objdir\dist\include\xpconnect, c:\src\mozilla\objdir\dist\include\docshell, c:\src\mozilla\objdir\dist\include\webshell, c:\src\mozilla\objdir\dist\include\necko, c:\src\mozilla\objdir\dist\include\windowwatcher, c:\src\mozilla\objdir\dist\include\ax_common, C:\src\mozilla\objdir\dist\include\caps"
+				AdditionalIncludeDirectories="c:\src\mozilla\objdir\dist\include;C:\src\mozilla\objdir\dist\sdk\include;c:\src\mozilla\objdir\dist\include\xpcom;c:\src\mozilla\objdir\dist\include\java;c:\src\mozilla\objdir\dist\include\plugin;c:\src\mozilla\objdir\dist\include\string;c:\src\mozilla\objdir\dist\include\dom;c:\src\mozilla\objdir\dist\include\content;c:\src\mozilla\objdir\dist\include\layout;c:\src\mozilla\objdir\dist\include\widget;c:\src\mozilla\objdir\dist\include\gfx;c:\src\mozilla\objdir\dist\include\js;c:\src\mozilla\objdir\dist\include\pref;c:\src\mozilla\objdir\dist\include\xpconnect;c:\src\mozilla\objdir\dist\include\docshell;c:\src\mozilla\objdir\dist\include\webshell;c:\src\mozilla\objdir\dist\include\necko;c:\src\mozilla\objdir\dist\include\windowwatcher;c:\src\mozilla\objdir\dist\include\ax_common;C:\src\mozilla\objdir\dist\include\caps"
 				PreprocessorDefinitions="WIN32;_WINDOWS;XP_WIN32;MOZILLA_STRICT_API;XPCOM_GLUE;XP_WIN;_X86_;NPSIMPLE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -182,6 +182,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath=".\authorize.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\axhost.cpp"
 				>
