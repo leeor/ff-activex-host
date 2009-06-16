@@ -11,7 +11,7 @@
 #include "authorize.h"
 
 // ----------------------------------------------------------------------------
-#define SUB_KEY L"SOFTWARE\\MozillaPlugins\\@itstructures.com/ffactivex\\MimeTypes\\application/x-itst-activex\\Authorization"
+#define SUB_KEY L"SOFTWARE\\MozillaPlugins\\@itstructures.com/ffactivex\\MimeTypes\\application/x-itst-activex"
 
 // ----------------------------------------------------------------------------
 
@@ -40,6 +40,9 @@ BOOL TestAuthorization (NPP Instance,
   bool rc = false;
   int16 i;
 
+#ifdef NDEF
+  _asm{int 3};
+#endif
   if (Instance == NULL) {
     return (FALSE);
     }
@@ -89,7 +92,7 @@ BOOL TestAuthorization (NPP Instance,
   ret = TRUE;
 
   for (i = 0; 
-       (i < ArgC) && (NPERR_NO_ERROR == rc); 
+       i < ArgC; 
        ++i) {
 
 	// search for any needed information: clsid, event handling directives, etc.
@@ -204,7 +207,9 @@ BOOL TestExplicitAuthorization (const wchar_t *DocumentUrl,
             break;
             }
           }
-        }
+	    } else {
+	    break;
+	    }
          
       }      
     RegCloseKey(hKey);
@@ -237,7 +242,7 @@ BOOL WildcardMatch (const wchar_t *Mask,
     
     if (Mask[i] == '*') {
       for (;
-           j < valueLen;
+           j < valueLen + 1;
            j++) {
        if (WildcardMatch(Mask + i + 1,
                          Value + j)) {

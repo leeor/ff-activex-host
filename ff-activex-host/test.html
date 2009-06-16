@@ -1,0 +1,16 @@
+<html>
+ <head>
+ </head>
+ <body>
+  <script language="JavaScript">
+    /* instantiate the plugin */
+    var plugin = document.createElement("object");
+    plugin.setAttribute("type", "application/x-itst-activex");
+    plugin.setAttribute("progid", "prodown.GenRSJ");
+    document.body.appendChild(plugin);
+    
+    var result = plugin.invoke("<QueryStatus />");
+    alert(result);
+  </script>    
+ </body>
+</html>
