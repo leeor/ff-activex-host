@@ -6,4 +6,6 @@ Release/*
 *.ncb 
 *.suo
 *.user
+*.exe
+
 

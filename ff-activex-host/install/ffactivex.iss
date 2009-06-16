@@ -4,9 +4,9 @@
 #define xbasepath "y:\wwwroot\projects\prodown\download\0.00.0000"
 
 [Setup]
-AppId={{{97F2985C-B74A-4672-960E-E3769AE5657A}}
+AppId={{97F2985C-B74A-4672-960E-E3769AE5657A}}
 AppName={#MyAppName}
-AppVerName=R{#MyAppName} {#version}
+AppVerName={#MyAppName} {#version}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
