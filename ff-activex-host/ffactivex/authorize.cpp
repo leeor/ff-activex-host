@@ -253,7 +253,7 @@ BOOL WildcardMatch (const wchar_t *Mask,
       }
     
     if ((j <= valueLen) &&
-        (Mask[i] == Value[j])) {
+        (Mask[i] == tolower(Value[j]))) {
       j++;
       continue;
       }
