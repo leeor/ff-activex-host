@@ -20,4 +20,6 @@ ArchitecturesInstallIn64BitMode=x64 ia64
 #include "ffactivex.inc"
 
 [Registry]
-Root: HKLM32; Subkey: "SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex\*"; ValueType: string; ValueName: "*"; ValueData: true;
+Root: HKLM32; Subkey: "SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex\clsid\*"; ValueType: string; ValueName: "*"; ValueData: true;
+Root: HKLM32; Subkey: "SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex\progid\*"; ValueType: string; ValueName: "*"; ValueData: true;
+Root: HKLM32; Subkey: "SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex\codeBaseUrl\*"; ValueType: string; ValueName: "*"; ValueData: true;
