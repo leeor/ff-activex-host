@@ -79,6 +79,7 @@ BOOL TestAuthorization (NPP Instance,
   NPVariant varHref;
   bool rc = false;
   int16 i;
+  char *wrkHref;
 
 #ifdef NDEF
   _asm{int 3};
@@ -131,6 +132,16 @@ BOOL TestAuthorization (NPP Instance,
 
   ret = TRUE;
 
+  wrkHref = (char *) alloca(varHref.value.stringValue.utf8length + 1);
+
+  memcpy(wrkHref,
+	     varHref.value.stringValue.utf8characters,
+		 varHref.value.stringValue.utf8length);
+
+  wrkHref[varHref.value.stringValue.utf8length] = 0x00;
+  NPNFuncs.releasevariantvalue(&varHref);
+  
+
   for (i = 0; 
        i < ArgC; 
        ++i) {
@@ -139,21 +150,20 @@ BOOL TestAuthorization (NPP Instance,
 	if (0 == strnicmp(ArgN[i], PARAM_CLSID, strlen(PARAM_CLSID))) {
 		    
 	  ret &= TestExplicitAuthorizationUTF8(PARAM_CLSID,
-		                                   varHref.value.stringValue.utf8characters,
+		                                   wrkHref,
 	                                       ArgV[i]);
 
 	  } else if (0 == strnicmp(ArgN[i], PARAM_PROGID, strlen(PARAM_PROGID))) {
 	  // The class id of the control we are asked to load
 	  ret &= TestExplicitAuthorizationUTF8(PARAM_PROGID,
-		                                   varHref.value.stringValue.utf8characters,
+		                                   wrkHref,
 	  	                                   ArgV[i]);
 	  } else if( 0  == strnicmp(ArgN[i], PARAM_CODEBASEURL, strlen(PARAM_CODEBASEURL))) {
 	  ret &= TestExplicitAuthorizationUTF8(PARAM_CODEBASEURL,
-		                                   varHref.value.stringValue.utf8characters,
+		                                   wrkHref,
 		                                   ArgV[i]);		
 	  }
 	}
-  NPNFuncs.releasevariantvalue(&varHref);
   return (ret);
   }
 
@@ -200,6 +210,12 @@ BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
     return (FALSE);
     }
 
+#ifdef NDEF
+  MessageBox(NULL,
+	         DocumentUrl,
+			 ProgramId,
+			 MB_OK);
+#endif
   wsprintf(subKey,
 	       SUB_KEY L"\\%s",
 		   AuthorizationType);
