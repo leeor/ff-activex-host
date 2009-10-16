@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Adam Lock <adamlock@eircom.net>
+ *                Ruediger Jungbeck <ruediger.jungbeck@rsj.de>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -120,7 +121,9 @@ typedef long int32;
 
 #include "nscore.h"
 #include "npapi.h"
-#include "npupp.h"
+//#include "npupp.h"
+#include "npfunctions.h"
+
 #include "nsID.h"
 #include <npruntime.h>
 

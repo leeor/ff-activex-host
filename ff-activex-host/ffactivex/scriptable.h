@@ -36,7 +36,8 @@
 #include <atlbase.h>
 #include <comdef.h>
 #include <npapi.h>
-#include <npupp.h>
+//#include <npupp.h>
+#include <npfunctions.h>
 #include <npruntime.h>
 #include "variants.h"
 

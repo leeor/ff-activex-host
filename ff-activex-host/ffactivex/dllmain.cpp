@@ -17,6 +17,9 @@
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
+ * Contributor:
+ *                Ruediger Jungbeck <ruediger.jungbeck@rsj.de>
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -44,6 +47,8 @@ BOOL APIENTRY DllMain( HMODULE hModule,
                        LPVOID lpReserved
 					 )
 {
+
+
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
@@ -111,7 +116,7 @@ NPError NPP_NewStream(NPP instance,
 	return rv;
 }
 
-int32 NPP_WriteReady (NPP instance, NPStream *stream)
+int32_t NPP_WriteReady (NPP instance, NPStream *stream)
 {
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -120,7 +125,7 @@ int32 NPP_WriteReady (NPP instance, NPStream *stream)
 	return rv;
 }
 
-int32 NPP_Write (NPP instance, NPStream *stream, int32 offset, int32 len, void *buffer)
+int32_t NPP_Write (NPP instance, NPStream *stream, int32_t offset, int32_t len, void *buffer)
 {   
 	if(instance == NULL)
 		return NPERR_INVALID_INSTANCE_ERROR;
@@ -180,6 +185,7 @@ int16 NPP_HandleEvent(NPP instance, void* event)
 
 NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 {
+
 	if(pFuncs == NULL)
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
@@ -211,14 +217,18 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
  */
 NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 {
+
 	if(pFuncs == NULL)
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
+#ifdef NDEF
+  // The following statements prevented usage of newer Mozilla sources than installed browser at runtime
 	if(HIBYTE(pFuncs->version) > NP_VERSION_MAJOR)
 		return NPERR_INCOMPATIBLE_VERSION_ERROR;
 
 	if(pFuncs->size < sizeof(NPNetscapeFuncs))
 		return NPERR_INVALID_FUNCTABLE_ERROR;
+#endif
 
 	if (!AtlAxWinInit()) {
 

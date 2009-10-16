@@ -17,6 +17,9 @@
  * Portions created by the Initial Developer are Copyright (C) 2008
  * the Initial Developer. All Rights Reserved.
  *
+ * Contributor:
+ *                Ruediger Jungbeck <ruediger.jungbeck@rsj.de>
+ *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
  * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
@@ -34,7 +37,9 @@
 #pragma once
 
 #include "npapi.h"
-#include "npupp.h"
+//#include "npupp.h"
+#include <npfunctions.h>
+#include <prtypes.h>
 
 #include "targetver.h"
 
@@ -60,7 +65,7 @@
 
 extern NPNetscapeFuncs NPNFuncs;
 
-#define NO_REGISTRY_AUTHORIZE 
+// #define NO_REGISTRY_AUTHORIZE 
 
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_PROGID[] = "progid";

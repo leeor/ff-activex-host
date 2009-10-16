@@ -3,14 +3,23 @@
  </head>
  <body>
   <script language="JavaScript">
+  
+  function Test() {
+      var result = plugin.invoke("<QueryStatus />");
+      alert(result);
+      }
+      
     /* instantiate the plugin */
     var plugin = document.createElement("object");
     plugin.setAttribute("type", "application/x-itst-activex");
     plugin.setAttribute("progid", "prodown.GenRSJ");
+    
     document.body.appendChild(plugin);
     
-    var result = plugin.invoke("<QueryStatus />");
-    alert(result);
+    window.setTimeout("Test()", 100);
+      
   </script>    
+  
+  <button onclick="Test()">Test</button>
  </body>
 </html>
