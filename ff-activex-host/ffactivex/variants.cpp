@@ -47,21 +47,23 @@ Utf8StringToBstr(LPCSTR szStr, int iSize)
     // Chars required for string
 	int iReq;
 
-	// Account for terminating 0. 
-    if (iSize != -1) {
-
-		++iSize; 
-	}
-
 	if ((iReq = MultiByteToWideChar(CP_UTF8, 0, szStr, iSize, 0, 0)) ==  0) {
 
 		return (0); 
+	}
+
+	// Account for terminating 0. 
+    if (iReq != -1) {
+
+		++iReq; 
 	}
 
     if ((bstrVal = ::SysAllocStringLen(0, iReq)) == 0) {
 
 		return (0); 
 	}
+
+	memset(bstrVal, 0, iReq * sizeof(wchar_t));
 
 	// Convert into the buffer. 
 	if (MultiByteToWideChar(CP_UTF8, 0, szStr, iSize, bstrVal, iReq) == 0) {

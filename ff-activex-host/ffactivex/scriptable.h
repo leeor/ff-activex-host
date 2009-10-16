@@ -94,28 +94,25 @@ private:
 				return -1;
 			}
 
-			if (invKind & INVOKE_FUNC) {
+			FUNCDESC *fDesc;
 
-				FUNCDESC *fDesc;
+			for (i = 0; 
+				 (i < attr->cFuncs) 
+					&& !found; 
+				 ++i) {
 
-				for (i = 0; 
-					 (i < attr->cFuncs) 
-						&& !found; 
-					 ++i) {
+				HRESULT hr = info->GetFuncDesc(i, &fDesc);
+				if (   SUCCEEDED(hr) 
+					&& fDesc 
+					&& (fDesc->memid == dID)) {
 
-					HRESULT hr = info->GetFuncDesc(i, &fDesc);
-					if (   SUCCEEDED(hr) 
-						&& fDesc 
-						&& (fDesc->memid == dID)) {
-
-						if (invKind & fDesc->invkind)
-							found = true;
-					}
-					info->ReleaseFuncDesc(fDesc);
+					if (invKind & fDesc->invkind)
+						found = true;
 				}
+				info->ReleaseFuncDesc(fDesc);
 			}
 
-			if (invKind & ~INVOKE_FUNC) {
+			if (!found && (invKind & ~INVOKE_FUNC)) {
 
 				VARDESC *vDesc;
 

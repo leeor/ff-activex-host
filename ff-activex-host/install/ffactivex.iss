@@ -1,12 +1,12 @@
 #define MyAppName "Firefox ActiveX Plugin"
 #define MyAppURL "http://code.google.com/p/ff-activex-host/"
 #define xversion "r28"
-#define xbasepath "y:\wwwroot\projects\prodown\download\0.00.0000"
+#define xbasepath "c:\src\ff-activex-host\ff-activex-host\"
 
 [Setup]
 AppId={{97F2985C-B74A-4672-960E-E3769AE5657A}}
 AppName={#MyAppName}
-AppVerName={#MyAppName} {#version}
+AppVerName={#MyAppName} {#xversion}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}

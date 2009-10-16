@@ -189,9 +189,12 @@ BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
 								const wchar_t *DocumentUrl,
                                 const wchar_t *ProgramId)
 {
+  BOOL ret = FALSE;
+
+#ifndef NO_REGISTRY_AUTHORIZE
+  
   HKEY hKey;
   HKEY hSubKey;
-  BOOL ret = FALSE;
   ULONG i;
   ULONG j;
   ULONG keyNameLen;
@@ -200,8 +203,6 @@ BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
   wchar_t valueName[_MAX_PATH];
   wchar_t subKey[_MAX_PATH];
 
-#ifndef NO_REGISTRY_AUTHORIZE
-  
   if (DocumentUrl == NULL) {
     return (FALSE);
     }

@@ -212,7 +212,7 @@ CControlEventSink::InternalInvoke(DISPID dispIdMember, REFIID riid, LCID lcid, W
 
 			for (unsigned int i = 0; i < pDispParams->cArgs; ++i) {
 				// convert the arguments
-				Variant2NPVar(&pDispParams->rgvarg[i], &args[i], instance);
+				Variant2NPVar(&pDispParams->rgvarg[i], &args[pDispParams->cArgs - i - 1], instance);
 			}
 		}
 
