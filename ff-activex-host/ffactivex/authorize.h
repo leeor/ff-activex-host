@@ -37,6 +37,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 BOOL TestAuthorization (NPP Instance,
-						int16 ArgC,
-						char *ArgN[],
-						char *ArgV[]);
+						            int16 ArgC,
+						            char *ArgN[],
+						            char *ArgV[],
+                        const char *MimeType);

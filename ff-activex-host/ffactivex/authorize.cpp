@@ -53,24 +53,36 @@
 
 // ----------------------------------------------------------------------------
 
-BOOL TestExplicitAuthorizationUTF8 (const char *AuthorizationType,
-									const char *DocumentUrl,
-								    const char *ProgramId);
+BOOL TestExplicitAuthorizationUTF8 (const char *MimeType,
+                                    const char *AuthorizationType,
+									                  const char *DocumentUrl,
+								                    const char *ProgramId);
 
-BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
-								const wchar_t *DocumentUrl,
+BOOL TestExplicitAuthorization (const wchar_t *MimeType,
+                                const wchar_t *AuthorizationType,
+								                const wchar_t *DocumentUrl,
                                 const wchar_t *ProgramId);
-
 
 BOOL WildcardMatch (const wchar_t *Mask,
                     const wchar_t *Value);
 
+HKEY FindKey (const wchar_t *MimeType,
+              const wchar_t *AuthorizationType);
+
+// ---------------------------------------------------------------------------
+
+HKEY BaseKeys[] = {
+  HKEY_CURRENT_USER,
+  HKEY_LOCAL_MACHINE
+  };
+
 // ----------------------------------------------------------------------------
 
 BOOL TestAuthorization (NPP Instance,
-						int16 ArgC,
-						char *ArgN[],
-						char *ArgV[])
+						            int16 ArgC,
+						            char *ArgN[],
+						            char *ArgV[],
+                        const char *MimeType)
 {
   BOOL ret = FALSE;
   NPObject *globalObj = NULL;
@@ -92,7 +104,7 @@ BOOL TestAuthorization (NPP Instance,
   // Get the window object.
   NPNFuncs.getvalue(Instance, 
   	                NPNVWindowNPObject, 
-  				    &globalObj);
+  				          &globalObj);
 
   // Create a "location" identifier.
   identifier = NPNFuncs.getstringidentifier("location");
@@ -100,8 +112,8 @@ BOOL TestAuthorization (NPP Instance,
   // Get the location property from the window object (which is another object).
   rc = NPNFuncs.getproperty(Instance, 
   	                        globalObj, 
-						    identifier, 
-						    &varLocation);
+						                identifier, 
+						                &varLocation);
 
   NPNFuncs.releaseobject(globalObj);
  
@@ -119,8 +131,8 @@ BOOL TestAuthorization (NPP Instance,
   // Get the location property from the location object.
   rc = NPNFuncs.getproperty(Instance, 
   	                        locationObj, 
-						    identifier, 
-						    &varHref);
+						                identifier, 
+						                &varHref);
 
   NPNFuncs.releasevariantvalue(&varLocation);
 
@@ -135,8 +147,8 @@ BOOL TestAuthorization (NPP Instance,
   wrkHref = (char *) alloca(varHref.value.stringValue.utf8length + 1);
 
   memcpy(wrkHref,
-	     varHref.value.stringValue.utf8characters,
-		 varHref.value.stringValue.utf8length);
+	       varHref.value.stringValue.utf8characters,
+		     varHref.value.stringValue.utf8length);
 
   wrkHref[varHref.value.stringValue.utf8length] = 0x00;
   NPNFuncs.releasevariantvalue(&varHref);
@@ -146,47 +158,53 @@ BOOL TestAuthorization (NPP Instance,
        i < ArgC; 
        ++i) {
 
-	// search for any needed information: clsid, event handling directives, etc.
-	if (0 == strnicmp(ArgN[i], PARAM_CLSID, strlen(PARAM_CLSID))) {
+	  // search for any needed information: clsid, event handling directives, etc.
+	  if (0 == strnicmp(ArgN[i], PARAM_CLSID, strlen(PARAM_CLSID))) {
 		    
-	  ret &= TestExplicitAuthorizationUTF8(PARAM_CLSID,
-		                                   wrkHref,
-	                                       ArgV[i]);
+	    ret &= TestExplicitAuthorizationUTF8(MimeType,
+                                           PARAM_CLSID,
+		                                       wrkHref,
+	                                         ArgV[i]);
 
-	  } else if (0 == strnicmp(ArgN[i], PARAM_PROGID, strlen(PARAM_PROGID))) {
-	  // The class id of the control we are asked to load
-	  ret &= TestExplicitAuthorizationUTF8(PARAM_PROGID,
-		                                   wrkHref,
-	  	                                   ArgV[i]);
-	  } else if( 0  == strnicmp(ArgN[i], PARAM_CODEBASEURL, strlen(PARAM_CODEBASEURL))) {
-	  ret &= TestExplicitAuthorizationUTF8(PARAM_CODEBASEURL,
-		                                   wrkHref,
-		                                   ArgV[i]);		
+	    } else if (0 == strnicmp(ArgN[i], PARAM_PROGID, strlen(PARAM_PROGID))) {
+	    // The class id of the control we are asked to load
+	    ret &= TestExplicitAuthorizationUTF8(MimeType,
+                                           PARAM_PROGID,
+		                                       wrkHref,
+	  	                                     ArgV[i]);
+	    } else if( 0  == strnicmp(ArgN[i], PARAM_CODEBASEURL, strlen(PARAM_CODEBASEURL))) {
+	    ret &= TestExplicitAuthorizationUTF8(MimeType,
+                                           PARAM_CODEBASEURL,
+		                                       wrkHref,
+		                                       ArgV[i]);		
+	    }
 	  }
-	}
   return (ret);
   }
 
 // ----------------------------------------------------------------------------
 
-BOOL TestExplicitAuthorizationUTF8(const char *AuthorizationType,
-								   const char *DocumentUrl,
-								   const char *ProgramId)
+BOOL TestExplicitAuthorizationUTF8 (const char *MimeType,
+                                    const char *AuthorizationType,
+		 						                    const char *DocumentUrl,
+								                    const char *ProgramId)
 {
   USES_CONVERSION;
   BOOL ret;
   
-  ret = TestExplicitAuthorization(A2W(AuthorizationType),
-	                              A2W(DocumentUrl),
-	                              A2W(ProgramId));
+  ret = TestExplicitAuthorization(A2W(MimeType),
+                                  A2W(AuthorizationType),
+	                                A2W(DocumentUrl),
+	                                A2W(ProgramId));
 
   return (ret);
   }
 
 // ----------------------------------------------------------------------------
 
-BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
-								const wchar_t *DocumentUrl,
+BOOL TestExplicitAuthorization (const wchar_t *MimeType,
+                                const wchar_t *AuthorizationType,
+								                const wchar_t *DocumentUrl,
                                 const wchar_t *ProgramId)
 {
   BOOL ret = FALSE;
@@ -201,8 +219,7 @@ BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
   ULONG valueNameLen;
   wchar_t keyName[_MAX_PATH];
   wchar_t valueName[_MAX_PATH];
-  wchar_t subKey[_MAX_PATH];
-
+  
   if (DocumentUrl == NULL) {
     return (FALSE);
     }
@@ -217,15 +234,9 @@ BOOL TestExplicitAuthorization (const wchar_t *AuthorizationType,
 			 ProgramId,
 			 MB_OK);
 #endif
-  wsprintf(subKey,
-	       SUB_KEY L"\\%s",
-		   AuthorizationType);
-
-  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                   subKey,
-                   0,
-                   KEY_ENUMERATE_SUB_KEYS,
-                   &hKey) == ERROR_SUCCESS) {
+ 
+  if ((hKey = FindKey(MimeType,
+                      AuthorizationType)) != NULL) {                   
                    
     for (i = 0;
          !ret;
@@ -330,3 +341,64 @@ BOOL WildcardMatch (const wchar_t *Mask,
     }
    return (TRUE);
    }  
+
+// ----------------------------------------------------------------------------
+
+HKEY FindKey (const wchar_t *MimeType,
+              const wchar_t *AuthorizationType)
+{
+  HKEY ret = NULL;
+  HKEY plugins;
+  wchar_t searchKey[_MAX_PATH];
+  wchar_t pluginName[_MAX_PATH];
+  DWORD j;
+  size_t i;
+
+  for (i = 0;
+       i < ARRAYSIZE(BaseKeys);
+       i++) {
+
+    if (RegOpenKeyEx(BaseKeys[i],
+                     L"SOFTWARE\\MozillaPlugins",
+                     0,
+                     KEY_ENUMERATE_SUB_KEYS,
+                     &plugins) == ERROR_SUCCESS) {
+
+      for (j = 0;
+           ret == NULL;
+           j++) {
+
+        if (RegEnumKey(plugins,
+                       j,
+                       pluginName,
+                       sizeof(pluginName)) != ERROR_SUCCESS) {
+          break;
+          }
+
+        wsprintf(searchKey,
+                 L"%s\\MimeTypes\\%s\\%s",
+                 pluginName,
+                 MimeType,
+                 AuthorizationType);
+
+        if (RegOpenKeyEx(plugins,
+                         searchKey,
+                         0,
+                         KEY_ENUMERATE_SUB_KEYS,
+                         &ret) == ERROR_SUCCESS) {
+          break;
+          }
+
+        ret = NULL;
+        }
+
+      RegCloseKey(plugins);
+
+      if (ret != NULL) {
+        break;
+        }
+      }
+    }
+
+  return (ret);
+  }

@@ -251,9 +251,10 @@ NPP_New(NPMIMEType pluginType,
 #ifndef NO_REGISTRY_AUTHORIZE
 
 	if (!TestAuthorization (instance,
-		   				    argc,
-						    argn,
-							argv)) {
+		   				            argc,
+						              argn,
+							            argv,
+                          pluginType)) {
       return NPERR_GENERIC_ERROR;
 	  }
 
