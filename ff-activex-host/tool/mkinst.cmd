@@ -2,7 +2,7 @@ setlocal
 
 
 cd install
-"c:\Program Files\Inno Setup 5\iscc" /O../dist /dversion=%1 /dbasepath=../ ffactivex.iss
+"c:\Program Files\Inno Setup 5\iscc" /O../dist /dxversion=%1 /dxbasepath=../ ffactivex.iss
 
 cd ..
 

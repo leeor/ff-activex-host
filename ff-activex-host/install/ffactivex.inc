@@ -10,4 +10,4 @@ Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex; Value
 Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes
 Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes; ValueType: string; ValueName: Dummy; ValueData: {#xversion}
 Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex
-Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex; ValueType: string; ValueName: "Dummy"; ValueData: "{#version}"
+Root: HKLM32; Subkey: SOFTWARE\MozillaPlugins\@itstructures.com/ffactivex\MimeTypes\application/x-itst-activex; ValueType: string; ValueName: "Dummy"; ValueData: "{#xversion}"
