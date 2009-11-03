@@ -36,7 +36,6 @@
 
 #include <atlbase.h>
 #include <npapi.h>
-//#include <npupp.h>
 #include <npfunctions.h>
 #include <prtypes.h>
 

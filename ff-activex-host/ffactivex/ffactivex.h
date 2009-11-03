@@ -37,7 +37,6 @@
 #pragma once
 
 #include "npapi.h"
-//#include "npupp.h"
 #include <npfunctions.h>
 #include <prtypes.h>
 

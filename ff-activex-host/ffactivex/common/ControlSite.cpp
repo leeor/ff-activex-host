@@ -21,6 +21,7 @@
  *
  * Contributor(s):
  *   Adam Lock <adamlock@netscape.com>
+ *	 Brent Booker
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -255,28 +256,51 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         }
     }
 
-    // Create the object
-    CComPtr<IUnknown> spObject;
-    HRESULT hr = CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_IUnknown, (void **) &spObject);
-    if (SUCCEEDED(hr) && checkForObjectSafety)
-    {
-        // Assume scripting via IDispatch
-        if (!m_pSecurityPolicy->IsObjectSafeForScripting(spObject, __uuidof(IDispatch)))
-        {
-            return E_FAIL;
-        }
-        // Drop through, success!
-    }
+	//Now Check if the control version needs to be updated.
+	BOOL bUpdateControlVersion = FALSE;
+	wchar_t *szURL = NULL;
+	DWORD dwFileVersionMS = 0xffffffff;
+    DWORD dwFileVersionLS = 0xffffffff;
 
-    // Do we need to download the control?
-    if (FAILED(hr) && szCodebase)
-    {
-        wchar_t *szURL = NULL;
+	if(szCodebase)
+	{
+		HKEY hk = NULL;   
+		wchar_t wszKey[60] = L"";
+		wchar_t wszData[MAX_PATH];
+		LPWSTR pwszClsid = NULL;
+		DWORD dwSize = 255;
+		DWORD dwHandle, dwLength, dwRegReturn;
+		DWORD dwExistingFileVerMS = 0xffffffff;
+		DWORD dwExistingFileVerLS = 0xffffffff;
+		BOOL bFoundLocalVerInfo = FALSE;
+		
+		StringFromCLSID(clsid, (LPOLESTR*)&pwszClsid);
+		swprintf(wszKey, L"%s%s%s\0", L"CLSID\\", pwszClsid, L"\\InprocServer32");
+		
+		if ( RegOpenKeyExW( HKEY_CLASSES_ROOT, wszKey, 0, KEY_READ, &hk ) == ERROR_SUCCESS )
+		{
+			dwRegReturn = RegQueryValueExW( hk, L"", NULL, NULL, (LPBYTE)wszData, &dwSize );
+			RegCloseKey( hk );
+		}
+		
+		if(dwRegReturn == ERROR_SUCCESS)
+		{
+			VS_FIXEDFILEINFO *pFileInfo;
+			UINT uLen; 
+			dwLength = GetFileVersionInfoSizeW( wszData , &dwHandle ); 
+			LPBYTE lpData = new BYTE[dwLength]; 
+			GetFileVersionInfoW( wszData, 0, dwLength, lpData ); 
+			bFoundLocalVerInfo = VerQueryValueW( lpData, L"\\", (LPVOID*)&pFileInfo, &uLen ); 
 
-        // Test if the code base ends in #version=a,b,c,d
-        DWORD dwFileVersionMS = 0xffffffff;
-        DWORD dwFileVersionLS = 0xffffffff;
-        const wchar_t *szHash = wcsrchr(szCodebase, wchar_t('#'));
+			if(bFoundLocalVerInfo)
+			{
+				dwExistingFileVerMS = pFileInfo->dwFileVersionMS;
+				dwExistingFileVerLS = pFileInfo->dwFileVersionLS;
+			}
+		}
+		
+		// Test if the code base ends in #version=a,b,c,d
+		const wchar_t *szHash = wcsrchr(szCodebase, wchar_t('#'));
         if (szHash)
         {
             if (wcsnicmp(szHash, L"#version=", 9) == 0)
@@ -286,6 +310,17 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
                 {
                     dwFileVersionMS = MAKELONG(b,a);
                     dwFileVersionLS = MAKELONG(d,c);
+					
+					//If local version info was found compare it
+					if(bFoundLocalVerInfo)
+					{
+						if(dwFileVersionMS > dwExistingFileVerMS)
+							bUpdateControlVersion = TRUE;
+						
+						if((dwFileVersionMS == dwExistingFileVerMS) && (dwFileVersionLS > dwExistingFileVerLS))
+							bUpdateControlVersion = TRUE;
+					}
+					
                 }
             }
             szURL = _wcsdup(szCodebase);
@@ -297,6 +332,33 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         {
             szURL = _wcsdup(szCodebase);
         }
+	}
+	
+	
+	CComPtr<IUnknown> spObject;
+	HRESULT hr;
+	//If the control needs to be updated do not call CoCreateInstance otherwise you will lock files
+	//and force a reboot on CoGetClassObjectFromURL
+	if(!bUpdateControlVersion)
+	{
+		// Create the object
+		hr = CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_IUnknown, (void **) &spObject);
+		if (SUCCEEDED(hr) && checkForObjectSafety)
+		{
+			// Assume scripting via IDispatch
+			if (!m_pSecurityPolicy->IsObjectSafeForScripting(spObject, __uuidof(IDispatch)))
+			{
+				return E_FAIL;
+			}
+			// Drop through, success!
+		}
+	}
+	
+
+    // Do we need to download the control?
+    if ((FAILED(hr) && szCodebase) || (bUpdateControlVersion))
+	{
+       
         if (!szURL)
             return E_OUTOFMEMORY;
 
@@ -315,6 +377,7 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
                 free(szURL);
                 return hr;
             }
+
             spBindStatusCallback = dynamic_cast<IBindStatusCallback *>(this);
             hr = RegisterBindStatusCallback(spBindContext, spBindStatusCallback, &spOldBSC, 0);
             if (FAILED(hr))
@@ -328,9 +391,20 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
             spBindContext = pBindContext;
         }
 
-        hr = CoGetClassObjectFromURL(clsid, szURL, dwFileVersionMS, dwFileVersionLS,
-            NULL, spBindContext, CLSCTX_ALL, NULL, IID_IUnknown, (void **) &m_spObject);
-        
+		//If the version from the CODEBASE value is greater than the installed control
+		//Call CoGetClassObjectFromURL with CLSID_NULL to prevent system change reboot prompt
+		if(bUpdateControlVersion)
+		{
+			hr = CoGetClassObjectFromURL(CLSID_NULL, szCodebase, dwFileVersionMS, dwFileVersionLS, 
+				NULL, spBindContext, CLSCTX_INPROC_HANDLER | CLSCTX_INPROC_SERVER, 0, IID_IClassFactory, (void **)&m_spObject);
+		}
+		else
+		{
+			hr = CoGetClassObjectFromURL(clsid, szURL, dwFileVersionMS, dwFileVersionLS,
+				NULL, spBindContext, CLSCTX_ALL, NULL, IID_IUnknown, (void **) &m_spObject);
+		}
+		
+
         free(szURL);
         
         // Handle the internal binding synchronously so the object exists
