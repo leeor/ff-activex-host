@@ -6,5 +6,6 @@ cd install
 
 cd ..
 
+copy dist\ffactivex-setup.exe dist\ffactivex-setup-%1.exe
 
 endlocal
