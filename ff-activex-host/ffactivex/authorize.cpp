@@ -144,13 +144,13 @@ BOOL TestAuthorization (NPP Instance,
 
   ret = TRUE;
 
-  wrkHref = (char *) alloca(varHref.value.stringValue.utf8length + 1);
+  wrkHref = (char *) alloca(varHref.value.stringValue.UTF8Length + 1);
 
   memcpy(wrkHref,
-	       varHref.value.stringValue.utf8characters,
-		     varHref.value.stringValue.utf8length);
+	       varHref.value.stringValue.UTF8Characters,
+		     varHref.value.stringValue.UTF8Length);
 
-  wrkHref[varHref.value.stringValue.utf8length] = 0x00;
+  wrkHref[varHref.value.stringValue.UTF8Length] = 0x00;
   NPNFuncs.releasevariantvalue(&varHref);
   
 

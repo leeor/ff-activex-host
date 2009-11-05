@@ -200,7 +200,7 @@ VerifySiteLock(NPP instance)
 		return false;
 	}
 
-	rc = MatchURL2TrustedLocations(instance, A2W(varHref.value.stringValue.utf8characters));
+	rc = MatchURL2TrustedLocations(instance, A2W(varHref.value.stringValue.UTF8Characters));
 	NPNFuncs.releasevariantvalue(&varHref);
 
 	if (false == rc) {
@@ -416,6 +416,6 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 	rcPos.right = window->clipRect.right;
 	rcPos.bottom = window->clipRect.bottom;
 	host->UpdateRect(rcPos);
-
+  
 	return NPERR_NO_ERROR;
 }

@@ -209,7 +209,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var)
 
 	case NPVariantType_String:
 		var->vt = VT_BSTR;
-		var->bstrVal = Utf8StringToBstr(npvar->value.stringValue.utf8characters, npvar->value.stringValue.utf8length);
+		var->bstrVal = Utf8StringToBstr(npvar->value.stringValue.UTF8Characters, npvar->value.stringValue.UTF8Length);
 		break;
 
 	case NPVariantType_Object:
