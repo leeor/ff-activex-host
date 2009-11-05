@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="ffactivex"
 	ProjectGUID="{B9ACDB28-1D44-4392-A2F1-83CFFD0C3376}"
 	RootNamespace="ffactivex"
@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comsvcs.lib"
+				AdditionalDependencies="comsvcs.lib version.lib"
 				OutputFile="$(OutDir)\npffax.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="ffactivex.def"
@@ -325,11 +325,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\StdAfx.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\common\StdAfx.h"
 				>
 			</File>
 			<File
