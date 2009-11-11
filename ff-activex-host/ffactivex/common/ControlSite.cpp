@@ -551,7 +551,10 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     m_spIOleInPlaceObject = m_spObject;
     m_spIOleInPlaceObjectWindowless = m_spObject;
 
-    m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
+	if (m_spIOleInPlaceObject)
+	{
+		m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
+	}
 
     // In-place activate the object
     if (m_bVisibleAtRuntime)
