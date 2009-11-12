@@ -228,7 +228,7 @@ CControlEventSink::InternalInvoke(DISPID dispIdMember, REFIID riid, LCID lcid, W
 			// convert the arguments
 			if (args[i].type == NPVariantType_String) {
 				// was allocated earlier by Variant2NPVar
-				NPNFuncs.memfree((void *)args[i].value.stringValue.UTF8Characters);
+				NPNFuncs.memfree((void *)args[i].value.stringValue.utf8characters);
 			}
 		}
 
