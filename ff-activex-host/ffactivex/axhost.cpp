@@ -221,7 +221,7 @@ CAxHost::UpdateRect(RECT rcPos)
 			hr = Site->Attach(Window, rcPos, NULL);
 			if (FAILED(hr)) {
 
-				log(instance, "AxHost.UpdateRect: failed to attach control");
+				log(instance, 0, "AxHost.UpdateRect: failed to attach control");
 			}
         }
         else {
@@ -258,13 +258,14 @@ CAxHost::verifyClsID(LPOLESTR oleClsID)
                 const DWORD kKillBit = 0x00000400;
                 if (dwFlags & kKillBit) {
 
-					log(instance, "AxHost.verifyClsID: the control is marked as unsafe by IE kill bits");
+					log(instance, 0, "AxHost.verifyClsID: the control is marked as unsafe by IE kill bits");
 					return false;
                 }
             }
         }
     }
 
+	log(instance, 1, "AxHost.verifyClsID: verified successfully");
 	return true;
 }
 
@@ -281,7 +282,7 @@ CAxHost::setClsID(const char *clsid)
 	}
 	else if (AcceptOnlyWellKnown) {
 
-		log(instance, "AxHost.setClsID: the requested CLSID is not on the Well Known list");
+		log(instance, 0, "AxHost.setClsID: the requested CLSID is not on the Well Known list");
 		return false;
 	}
 
@@ -292,11 +293,12 @@ CAxHost::setClsID(const char *clsid)
 		if (SUCCEEDED(hr) && !::IsEqualCLSID(ClsID, CLSID_NULL)) {
 
 			isValidClsID = true;
+			log(instance, 1, "AxHost.setClsID: CLSID %s set", clsid);
 			return true;
 		}
     }
 
-	log(instance, "AxHost.setClsID: failed to set the requested clsid");
+	log(instance, 0, "AxHost.setClsID: failed to set the requested clsid");
 	return false;
 }
 
@@ -322,7 +324,7 @@ CAxHost::setClsIDFromProgID(const char *progid)
 		}
 		else {
 
-			log(instance, "AxHost.setClsIDFromProgID: the requested PROGID is not on the Well Known list");
+			log(instance, 0, "AxHost.setClsIDFromProgID: the requested PROGID is not on the Well Known list");
 			return false;
 		}
 	}
@@ -330,7 +332,7 @@ CAxHost::setClsIDFromProgID(const char *progid)
 	hr = CLSIDFromProgID(oleProgID, &clsid);
 	if (FAILED(hr)) {
 
-		log(instance, "AxHost.setClsIDFromProgID: could not resolve PROGID");
+		log(instance, 0, "AxHost.setClsIDFromProgID: could not resolve PROGID");
 		return false;
 	}
 
@@ -345,11 +347,12 @@ CAxHost::setClsIDFromProgID(const char *progid)
 		if (!::IsEqualCLSID(ClsID, CLSID_NULL)) {
 
 			isValidClsID = true;
+			log(instance, 1, "AxHost.setClsIDFromProgID: PROGID %s resolved and set", progid);
 			return true;
 		}
     }
 
-	log(instance, "AxHost.setClsIDFromProgID: failed to set the resolved CLSID");
+	log(instance, 0, "AxHost.setClsIDFromProgID: failed to set the resolved CLSID");
 	return false;
 }
 
@@ -364,7 +367,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 {
 	if (!isValidClsID) {
 
-		log(instance, "AxHost.CreateControl: current location is not trusted");
+		log(instance, 0, "AxHost.CreateControl: current location is not trusted");
 		return false;
 	}
 
@@ -372,7 +375,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	CControlSiteInstance::CreateInstance(&Site);
 	if (Site == NULL) {
 
-		log(instance, "AxHost.CreateControl: CreateInstance failed");
+		log(instance, 0, "AxHost.CreateControl: CreateInstance failed");
 		return false;
 	}
 
@@ -385,7 +388,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	}
 	else {
 
-		Site->m_bSafeForScriptingObjectsOnly = true;
+		Site->m_bSafeForScriptingObjectsOnly = false;
 	}
 
 	Site->AddRef();
@@ -409,8 +412,8 @@ CAxHost::CreateControl(bool subscribeToEvents)
 					   0, 
 					   NULL );
 
-		log(instance, lpMsgBuf);
-		log(instance, "AxHost.CreateControl: failed to create site");
+		log(instance, 0, lpMsgBuf);
+		log(instance, 0, "AxHost.CreateControl: failed to create site");
 		return false;
 	}
 
@@ -418,7 +421,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	Site->GetControlUnknown(&control);
 	if (!control) {
 
-		log(instance, "AxHost.CreateControl: failed to create control (was it just downloaded?)");
+		log(instance, 0, "AxHost.CreateControl: failed to create control (was it just downloaded?)");
 		return false;
 	}
 
@@ -444,11 +447,12 @@ CAxHost::CreateControl(bool subscribeToEvents)
 					   0, 
 					   NULL );
 
-		log(instance, lpMsgBuf);
-		log(instance, "AxHost.CreateControl: SubscribeToEvents failed");
+		log(instance, 0, lpMsgBuf);
+		log(instance, 0, "AxHost.CreateControl: SubscribeToEvents failed");
 		return false;
 	}
 
+	log(instance, 1, "AxHost.CreateControl: control created successfully");
 	return true;
 }
 
@@ -462,18 +466,19 @@ CAxHost::AddEventHandler(wchar_t *name, wchar_t *handler)
 
 	if (!Sink) {
 
-		log(instance, "AxHost.AddEventHandler: no valid sink");
+		log(instance, 0, "AxHost.AddEventHandler: no valid sink");
 		return false;
 	}
 
 	hr = Sink->m_spEventSinkTypeInfo->GetIDsOfNames(&oleName, 1, &id);
 	if (FAILED(hr)) {
 
-		log(instance, "AxHost.AddEventHandler: GetIDsOfNames failed to resolve event name");
+		log(instance, 0, "AxHost.AddEventHandler: GetIDsOfNames failed to resolve event name");
 		return false;
 	}
 
 	Sink->events[id] = handler;
+	log(instance, 1, "AxHost.AddEventHandler: handler %S set for event %S", handler, name);
 	return true;
 }
 

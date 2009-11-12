@@ -52,6 +52,7 @@
 #include <atlstr.h>
 #include <atlcom.h>
 #include <atlctl.h>
+#include <varargs.h>
 
 #include "variants.h"
 
@@ -64,17 +65,19 @@
 
 extern NPNetscapeFuncs NPNFuncs;
 
-// #define NO_REGISTRY_AUTHORIZE 
+#define NO_REGISTRY_AUTHORIZE 
 
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_PROGID[] = "progid";
+static const char PARAM_DEBUG[] = "debugLevel";
+static const char PARAM_LOGGER[] = "logger";
 static const char PARAM_CODEBASEURL [] = "codeBaseUrl";
 static const char PARAM_ONEVENT[] = "Event_";
 static const char PARAM_PARAM[] = "PARAM_";
 
 void *ffax_calloc(unsigned int size);
 void ffax_free(void *ptr);
-void log(NPP instance, char *message);
+void log(NPP instance, unsigned int level, char *message, ...);
 NPError NPP_New(NPMIMEType pluginType, NPP instance, uint16 mode, int16 argc, char *argn[], char *argv[], NPSavedData *saved);
 NPError NPP_Destroy(NPP instance, NPSavedData **save);
 NPError NPP_SetWindow(NPP instance, NPWindow *window);

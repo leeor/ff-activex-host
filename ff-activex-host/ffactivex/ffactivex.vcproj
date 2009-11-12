@@ -64,7 +64,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comsvcs.lib"
+				AdditionalDependencies="comsvcs.lib version.lib"
 				OutputFile="$(OutDir)\npffax.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="ffactivex.def"
@@ -325,11 +325,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\common\StdAfx.h"
+				RelativePath=".\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h"
+				RelativePath=".\common\StdAfx.h"
 				>
 			</File>
 			<File
