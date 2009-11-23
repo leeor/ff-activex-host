@@ -211,6 +211,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 	return NPERR_NO_ERROR;
 }
 
+#define MIN(x, y)	((x) < (y)) ? (x) : (y)
 /*
  * Initialize the plugin. Called the first time the browser comes across a
  * MIME Type this plugin is registered to handle.
@@ -239,50 +240,8 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 
 	_pAtlModule = &_Module;
 
-	NPNFuncs.size                    = pFuncs->size;
-	NPNFuncs.version                 = pFuncs->version;
-	NPNFuncs.geturlnotify            = pFuncs->geturlnotify;
-	NPNFuncs.geturl                  = pFuncs->geturl;
-	NPNFuncs.posturlnotify           = pFuncs->posturlnotify;
-	NPNFuncs.posturl                 = pFuncs->posturl;
-	NPNFuncs.requestread             = pFuncs->requestread;
-	NPNFuncs.newstream               = pFuncs->newstream;
-	NPNFuncs.write                   = pFuncs->write;
-	NPNFuncs.destroystream           = pFuncs->destroystream;
-	NPNFuncs.status                  = pFuncs->status;
-	NPNFuncs.uagent                  = pFuncs->uagent;
-	NPNFuncs.memalloc                = pFuncs->memalloc;
-	NPNFuncs.memfree                 = pFuncs->memfree;
-	NPNFuncs.memflush                = pFuncs->memflush;
-	NPNFuncs.reloadplugins           = pFuncs->reloadplugins;
-	NPNFuncs.getJavaEnv              = pFuncs->getJavaEnv;
-	NPNFuncs.getJavaPeer             = pFuncs->getJavaPeer;
-	NPNFuncs.getvalue                = pFuncs->getvalue;
-	NPNFuncs.setvalue                = pFuncs->setvalue;
-	NPNFuncs.invalidaterect          = pFuncs->invalidaterect;
-	NPNFuncs.invalidateregion        = pFuncs->invalidateregion;
-	NPNFuncs.forceredraw             = pFuncs->forceredraw;
-	NPNFuncs.getstringidentifier     = pFuncs->getstringidentifier;
-	NPNFuncs.getstringidentifiers    = pFuncs->getstringidentifiers;
-	NPNFuncs.getintidentifier        = pFuncs->getintidentifier;
-	NPNFuncs.identifierisstring      = pFuncs->identifierisstring;
-	NPNFuncs.utf8fromidentifier      = pFuncs->utf8fromidentifier;
-	NPNFuncs.intfromidentifier       = pFuncs->intfromidentifier;
-	NPNFuncs.createobject            = pFuncs->createobject;
-	NPNFuncs.retainobject            = pFuncs->retainobject;
-	NPNFuncs.releaseobject           = pFuncs->releaseobject;
-	NPNFuncs.invoke                  = pFuncs->invoke;
-	NPNFuncs.invokeDefault           = pFuncs->invokeDefault;
-	NPNFuncs.evaluate                = pFuncs->evaluate;
-	NPNFuncs.getproperty             = pFuncs->getproperty;
-	NPNFuncs.setproperty             = pFuncs->setproperty;
-	NPNFuncs.removeproperty          = pFuncs->removeproperty;
-	NPNFuncs.hasproperty             = pFuncs->hasproperty;
-	NPNFuncs.hasmethod               = pFuncs->hasmethod;
-	NPNFuncs.releasevariantvalue     = pFuncs->releasevariantvalue;
-	NPNFuncs.setexception            = pFuncs->setexception;
-	NPNFuncs.pushpopupsenabledstate  = pFuncs->pushpopupsenabledstate;
-	NPNFuncs.poppopupsenabledstate   = pFuncs->poppopupsenabledstate;
+	memset(&NPNFuncs, 0, sizeof(NPNetscapeFuncs));
+	memcpy(&NPNFuncs, pFuncs, MIN(pFuncs->size, sizeof(NPNetscapeFuncs)));
 
 	return NPERR_NO_ERROR;
 }

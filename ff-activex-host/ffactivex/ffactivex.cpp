@@ -262,9 +262,8 @@ NPP_New(NPMIMEType pluginType,
 	int16 i = 0;
 	USES_CONVERSION;
 
-	log(instance, 4, "AxHost.NPP_New: Called");
 
-	if (!instance) {
+	if (!instance || (0 == NPNFuncs.size)) {
 
 		return NPERR_INVALID_PARAM;
 	}

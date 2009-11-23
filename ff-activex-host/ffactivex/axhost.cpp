@@ -163,6 +163,8 @@ CAxHost::~CAxHost()
 		Site->Detach();
         Site->Release();
     }
+
+	CoFreeUnusedLibraries();
 }
 
 CAxHost::CAxHost(NPP inst):
