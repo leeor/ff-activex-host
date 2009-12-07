@@ -390,7 +390,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	}
 	else {
 
-		Site->m_bSafeForScriptingObjectsOnly = false;
+		Site->m_bSafeForScriptingObjectsOnly = true;
 	}
 
 	Site->AddRef();
