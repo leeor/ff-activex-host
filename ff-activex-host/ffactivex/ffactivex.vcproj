@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1255"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="ffactivex"
 	ProjectGUID="{B9ACDB28-1D44-4392-A2F1-83CFFD0C3376}"
 	RootNamespace="ffactivex"
@@ -239,6 +239,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GenericNPObject.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\common\ItemContainer.cpp"
 				>
 			</File>
@@ -298,6 +302,10 @@
 			</File>
 			<File
 				RelativePath=".\ffactivex.h"
+				>
+			</File>
+			<File
+				RelativePath=".\GenericNPObject.h"
 				>
 			</File>
 			<File

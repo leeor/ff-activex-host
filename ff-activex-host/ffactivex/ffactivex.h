@@ -65,7 +65,7 @@
 
 extern NPNetscapeFuncs NPNFuncs;
 
-//#define NO_REGISTRY_AUTHORIZE 
+#define NO_REGISTRY_AUTHORIZE 
 
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_PROGID[] = "progid";

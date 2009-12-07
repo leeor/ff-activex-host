@@ -143,7 +143,10 @@ private:
 			return -1;
 		}
 
-		LPOLESTR oleName = A2W(NPNFuncs.utf8fromidentifier(name));
+		NPUTF8 *npname = NPNFuncs.utf8fromidentifier(name);
+		LPOLESTR oleName = A2W(npname);
+		//free(npname);
+		//npname = NULL;
 
 		IDispatchPtr disp = control.GetInterfacePtr();
 		if (!disp) {
