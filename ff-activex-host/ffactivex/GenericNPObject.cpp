@@ -151,7 +151,7 @@ bool toString(void *object, const NPVariant *args, uint32_t argCount, NPVariant 
 		}
 		else if (NPVARIANT_IS_STRING(*it)) {
 
-			out += (*it).value.stringValue.utf8characters;
+			out += (*it).value.stringValue.UTF8Characters;
 			out += ",";
 		}
 		else if (NPVARIANT_IS_OBJECT(*it)) {
@@ -322,17 +322,17 @@ static bool CopyNPVariant(NPVariant *dst, const NPVariant *src)
 	dst->type = src->type;
 	if (NPVARIANT_IS_STRING(*src)) {
 
-		NPUTF8 *str = (NPUTF8 *)NPNFuncs.memalloc((src->value.stringValue.utf8length + 1) * sizeof(NPUTF8));
+		NPUTF8 *str = (NPUTF8 *)NPNFuncs.memalloc((src->value.stringValue.UTF8Length + 1) * sizeof(NPUTF8));
 		if (NULL == str) {
 
 			return false;
 		}
-		dst->value.stringValue.utf8length = src->value.stringValue.utf8length;
+		dst->value.stringValue.UTF8Length = src->value.stringValue.UTF8Length;
 
-		memcpy(str, src->value.stringValue.utf8characters, src->value.stringValue.utf8length);
-		str[dst->value.stringValue.utf8length] = 0;
+		memcpy(str, src->value.stringValue.UTF8Characters, src->value.stringValue.UTF8Length);
+		str[dst->value.stringValue.UTF8Length] = 0;
 
-		dst->value.stringValue.utf8characters = str;
+		dst->value.stringValue.UTF8Characters = str;
 	}
 	else if (NPVARIANT_IS_OBJECT(*src)) {
 
