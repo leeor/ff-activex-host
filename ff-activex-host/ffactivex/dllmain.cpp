@@ -219,6 +219,8 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 {
 
+// _asm {int 3};
+
 	if(pFuncs == NULL)
 		return NPERR_INVALID_FUNCTABLE_ERROR;
 
