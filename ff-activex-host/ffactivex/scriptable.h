@@ -48,6 +48,85 @@ class Scriptable: public NPObject
 private:
 	Scriptable(const Scriptable &);
 
+	// This method iterates all members of the current interface, looking for the member with the 
+	// id of member_id. If not found within this interface, it will iterate all base interfaces
+	// recursively, until a match is found, or all the hierarchy was searched.
+	bool find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id, unsigned int invKind) {
+
+		bool found = false;
+		unsigned int i = 0;
+
+		FUNCDESC *fDesc;
+
+		for (i = 0; 
+			 (i < attr->cFuncs) 
+				&& !found; 
+			 ++i) {
+
+			HRESULT hr = info->GetFuncDesc(i, &fDesc);
+			if (   SUCCEEDED(hr) 
+				&& fDesc 
+				&& (fDesc->memid == member_id)) {
+
+				if (invKind & fDesc->invkind)
+					found = true;
+			}
+			info->ReleaseFuncDesc(fDesc);
+		}
+
+		if (!found && (invKind & ~INVOKE_FUNC)) {
+
+			VARDESC *vDesc;
+
+			for (i = 0; 
+				 (i < attr->cVars) 
+					&& !found; 
+				 ++i) {
+
+				HRESULT hr = info->GetVarDesc(i, &vDesc);
+				if (   SUCCEEDED(hr) 
+					&& vDesc 
+					&& (vDesc->memid == member_id)) {
+
+					found = true;
+				}
+				info->ReleaseVarDesc(vDesc);
+			}
+		}
+
+		if (!found) {
+			// iterate inherited interfaces
+			HREFTYPE refType = NULL;
+
+			for (i = 0; (i < attr->cImplTypes) && !found; ++i) {
+
+				ITypeInfoPtr baseInfo;
+				TYPEATTR *baseAttr;
+
+				if (FAILED(info->GetRefTypeOfImplType(0, &refType))) {
+
+					continue;
+				}
+
+				if (FAILED(info->GetRefTypeInfo(refType, &baseInfo))) {
+
+					continue;
+				}
+
+				baseInfo->AddRef();
+				if (FAILED(baseInfo->GetTypeAttr(&baseAttr))) {
+
+					continue;
+				}
+
+				found = find_member(baseInfo, baseAttr, member_id, invKind);
+				baseInfo->ReleaseTypeAttr(baseAttr);
+			}
+		}
+
+		return found;
+	}
+
 	DISPID ResolveName(NPIdentifier name, unsigned int invKind) {
 
 		bool found = false;
@@ -64,7 +143,10 @@ private:
 			return -1;
 		}
 
-		LPOLESTR oleName = A2W(NPNFuncs.utf8fromidentifier(name));
+		NPUTF8 *npname = NPNFuncs.utf8fromidentifier(name);
+		LPOLESTR oleName = A2W(npname);
+		//free(npname);
+		//npname = NULL;
 
 		IDispatchPtr disp = control.GetInterfacePtr();
 		if (!disp) {
@@ -76,8 +158,6 @@ private:
 
 		disp->GetIDsOfNames(IID_NULL, &oleName, 1, LOCALE_SYSTEM_DEFAULT, &dID);
 		if (dID != -1) {
-
-			unsigned int i;
 
 			ITypeInfoPtr info;
 			disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &info);
@@ -94,43 +174,7 @@ private:
 				return -1;
 			}
 
-			FUNCDESC *fDesc;
-
-			for (i = 0; 
-				 (i < attr->cFuncs) 
-					&& !found; 
-				 ++i) {
-
-				HRESULT hr = info->GetFuncDesc(i, &fDesc);
-				if (   SUCCEEDED(hr) 
-					&& fDesc 
-					&& (fDesc->memid == dID)) {
-
-					if (invKind & fDesc->invkind)
-						found = true;
-				}
-				info->ReleaseFuncDesc(fDesc);
-			}
-
-			if (!found && (invKind & ~INVOKE_FUNC)) {
-
-				VARDESC *vDesc;
-
-				for (i = 0; 
-					 (i < attr->cVars) 
-						&& !found; 
-					 ++i) {
-
-					HRESULT hr = info->GetVarDesc(i, &vDesc);
-					if (   SUCCEEDED(hr) 
-						&& vDesc 
-						&& (vDesc->memid == dID)) {
-
-						found = true;
-					}
-					info->ReleaseVarDesc(vDesc);
-				}
-			}
+			found = find_member(info, attr, dID, invKind);
 			info->ReleaseTypeAttr(attr);
 		}
 

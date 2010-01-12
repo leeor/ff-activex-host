@@ -551,7 +551,10 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     m_spIOleInPlaceObject = m_spObject;
     m_spIOleInPlaceObjectWindowless = m_spObject;
 
-    m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
+	if (m_spIOleInPlaceObject)
+	{
+		SetPosition(m_rcObjectPos);
+	}
 
     // In-place activate the object
     if (m_bVisibleAtRuntime)
@@ -683,11 +686,12 @@ HRESULT CControlSite::DoVerb(LONG nVerb, LPMSG lpMsg)
 // Set the position on the control
 HRESULT CControlSite::SetPosition(const RECT &rcPos)
 {
+	HWND hwnd;
     TRACE_METHOD(CControlSite::SetPosition);
     m_rcObjectPos = rcPos;
-    if (m_spIOleInPlaceObject)
+    if (m_spIOleInPlaceObject && SUCCEEDED(m_spIOleInPlaceObject->GetWindow(&hwnd)))
     {
-        m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
+		m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
     }
     return S_OK;
 }

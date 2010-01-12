@@ -79,33 +79,62 @@ ffax_free(void *ptr)
 // Gecko API
 //
 
+static unsigned int log_level = 0;
+static char *logger = "console.log";
+
 void
-log(NPP instance, char *message)
+log(NPP instance, unsigned int level, char *message, ...)
 {
-	NPVariant varConsole;
 	NPVariant result;
 	NPVariant args;
 	NPObject *globalObj = NULL;
 	bool rc = false;
-	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &globalObj);
+	char *formatted = NULL;
+	char *new_formatted = NULL;
+	int buff_len = 0;
+	int size = 0;
 
-	NPIdentifier console = NPNFuncs.getstringidentifier("console");
-	rc = NPNFuncs.getproperty(instance, globalObj, console, &varConsole);
-	NPNFuncs.releaseobject(globalObj);
-	if (!rc){
+	va_list list;
+
+	if (level > log_level) {
 
 		return;
 	}
 
-	// Get a pointer to the "location" object.
-	NPObject *consoleObj = varConsole.value.objectValue;
-	// Create a "href" identifier.
-	NPIdentifier identifier = NPNFuncs.getstringidentifier("log");
+	buff_len = strlen(message);
+	buff_len += buff_len / 10;
+	formatted = (char *)calloc(1, buff_len);
+	while (true) {
 
-	STRINGZ_TO_NPVARIANT(message, args);
+		va_start(list, message);
+		size = vsnprintf_s(formatted, buff_len, _TRUNCATE, message, list);
+		va_end(list);
 
-	bool success = NPNFuncs.invoke(instance, consoleObj, identifier, &args, 1, &result);
-	NPNFuncs.releasevariantvalue(&varConsole);
+		if (size > -1 && size < buff_len)
+			break;
+
+		buff_len *= 2;
+		new_formatted = (char *)realloc(formatted, buff_len);
+		if (NULL == new_formatted) {
+
+			free(formatted);
+			return;
+		}
+
+		formatted = new_formatted;
+		new_formatted = NULL;
+	}
+
+	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &globalObj);
+	NPIdentifier handler = NPNFuncs.getstringidentifier(logger);
+
+	STRINGZ_TO_NPVARIANT(formatted, args);
+
+	bool success = NPNFuncs.invoke(instance, globalObj, handler, &args, 1, &result);
+	NPNFuncs.releasevariantvalue(&result);
+	NPNFuncs.releaseobject(globalObj);
+
+	free(formatted);
 }
 
 static bool
@@ -123,7 +152,7 @@ MatchURL2TrustedLocations(NPP instance, LPCTSTR matchUrl)
 	rc = url.CrackUrl(matchUrl, ATL_URL_DECODE);
 	if (!rc) {
 
-		log(instance, "AxHost.MatchURL2TrustedLocations: failed to parse the current location URL");
+		log(instance, 0, "AxHost.MatchURL2TrustedLocations: failed to parse the current location URL");
 		return false;
 	}
 
@@ -183,7 +212,7 @@ VerifySiteLock(NPP instance)
 	NPNFuncs.releaseobject(globalObj);
 	if (!rc){
 
-		log(instance, "AxHost.VerifySiteLock: could not get the location from the global object");
+		log(instance, 0, "AxHost.VerifySiteLock: could not get the location from the global object");
 		return false;
 	}
 
@@ -196,7 +225,7 @@ VerifySiteLock(NPP instance)
 	NPNFuncs.releasevariantvalue(&varLocation);
 	if (!rc) {
 
-		log(instance, "AxHost.VerifySiteLock: could not get the href from the location property");
+		log(instance, 0, "AxHost.VerifySiteLock: could not get the href from the location property");
 		return false;
 	}
 
@@ -205,7 +234,7 @@ VerifySiteLock(NPP instance)
 
 	if (false == rc) {
 
-		log(instance, "AxHost.VerifySiteLock: current location is not trusted");
+		log(instance, 0, "AxHost.VerifySiteLock: current location is not trusted");
 	}
 
 	return rc;
@@ -233,7 +262,9 @@ NPP_New(NPMIMEType pluginType,
 	int16 i = 0;
 	USES_CONVERSION;
 
-	if (!instance) {
+  //_asm {int 3};
+
+	if (!instance || (0 == NPNFuncs.size)) {
 
 		return NPERR_INVALID_PARAM;
 	}
@@ -269,7 +300,7 @@ NPP_New(NPMIMEType pluginType,
 		if (!host) {
 
 			rc = NPERR_OUT_OF_MEMORY_ERROR;
-			log(instance, "AxHost.NPP_New: failed to allocate memory for a new host");
+			log(instance, 0, "AxHost.NPP_New: failed to allocate memory for a new host");
 			break;
 		}
 
@@ -286,6 +317,15 @@ NPP_New(NPMIMEType pluginType,
 			else if (0 == strnicmp(argn[i], PARAM_PROGID, strlen(PARAM_PROGID))) {
 				// The class id of the control we are asked to load
 				host->setClsIDFromProgID(argv[i]);
+			}
+			else if (0 == strnicmp(argn[i], PARAM_DEBUG, strlen(PARAM_PROGID))) {
+				// Logging verbosity
+				log_level = atoi(argv[i]);
+				log(instance, 0, "AxHost.NPP_New: debug level set to %d", log_level);
+			}
+			else if (0 == strnicmp(argn[i], PARAM_LOGGER, strlen(PARAM_PROGID))) {
+				// Logger function
+				logger = strdup(argv[i]);
 			}
 			else if (0 == strnicmp(argn[i], PARAM_ONEVENT, strlen(PARAM_ONEVENT))) {
 				// A request to handle one of the activex's events in JS
@@ -325,7 +365,7 @@ NPP_New(NPMIMEType pluginType,
 				}
 				else {
 
-					log(instance, "AxHost.NPP_New: codeBaseUrl contains an untrusted location");
+					log(instance, 0, "AxHost.NPP_New: codeBaseUrl contains an untrusted location");
 				}
 			}
 		}
@@ -337,7 +377,7 @@ NPP_New(NPMIMEType pluginType,
 		if (!host->hasValidClsID()) {
 
 			rc = NPERR_INVALID_PARAM;
-			log(instance, "AxHost.NPP_New: no valid CLSID or PROGID");
+			log(instance, 0, "AxHost.NPP_New: no valid CLSID or PROGID");
 			break;
 		}
 
@@ -347,7 +387,7 @@ NPP_New(NPMIMEType pluginType,
 		if (!host->CreateControl(events.GetSize() ? true : false)) {
 
 			rc = NPERR_GENERIC_ERROR;
-			log(instance, "AxHost.NPP_New: failed to create the control");
+			log(instance, 0, "AxHost.NPP_New: failed to create the control");
 			break;
 		}
 
@@ -381,6 +421,9 @@ NPP_New(NPMIMEType pluginType,
 NPError 
 NPP_Destroy(NPP instance, NPSavedData **save)
 {
+
+// _asm {int 3}; 
+
 	if (!instance || !instance->pdata) {
 
 		return NPERR_INVALID_PARAM;
