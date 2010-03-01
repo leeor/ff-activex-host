@@ -91,16 +91,38 @@ BSTR2NPVar(BSTR bstr, NPVariant *npvar, NPP instance)
 {
 	USES_CONVERSION;
 	char *npStr = NULL;
-	char *cStr = NULL;
+  size_t sourceLen;
+  size_t bytesNeeded;
 
-	cStr = OLE2A(bstr);
+  sourceLen = lstrlenW(bstr);
+
+  bytesNeeded = WideCharToMultiByte(CP_UTF8,
+                                    0,
+                                    bstr,
+                                    sourceLen,
+                                    NULL,
+                                    0,
+                                    NULL,
+                                    NULL);
+
+  bytesNeeded += 1;
+
 	// complete lack of documentation on Mozilla's part here, I have no
 	// idea how this string is supposed to be freed
-	npStr = (char *)NPNFuncs.memalloc(strlen(cStr) + 1);
+	npStr = (char *)NPNFuncs.memalloc(bytesNeeded);
 	if (npStr) {
 
-		memset(npStr, 0, strlen(cStr) + 1);
-		memcpy(npStr, cStr, strlen(cStr));
+		memset(npStr, 0, bytesNeeded);
+
+    WideCharToMultiByte(CP_UTF8,
+                        0,
+                        bstr,
+                        sourceLen,
+                        npStr,
+                        bytesNeeded - 1,
+                        NULL,
+                        NULL);
+		
 		STRINGZ_TO_NPVARIANT(npStr, (*npvar));
 	}
 	else {
