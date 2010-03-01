@@ -262,6 +262,7 @@ NPP_New(NPMIMEType pluginType,
 	int16 i = 0;
 	USES_CONVERSION;
 
+  //_asm {int 3};
 
 	if (!instance || (0 == NPNFuncs.size)) {
 
@@ -420,6 +421,9 @@ NPP_New(NPMIMEType pluginType,
 NPError 
 NPP_Destroy(NPP instance, NPSavedData **save)
 {
+
+// _asm {int 3}; 
+
 	if (!instance || !instance->pdata) {
 
 		return NPERR_INVALID_PARAM;
