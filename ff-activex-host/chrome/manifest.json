@@ -1,0 +1,15 @@
+{
+    // Required
+    "name": "ActiveX hosting plugin",
+    "version": "1.36",
+
+    // Recommended
+    "description": "ActiveX hosting plugin",
+
+    // Add any of these that you need
+    "plugins": [
+        {
+            "path": "npffax.dll", "public": true
+        }
+    ]
+}
