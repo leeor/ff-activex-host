@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,35,0,0
- PRODUCTVERSION 1,35,0,0
+ FILEVERSION 1,36,0,0
+ PRODUCTVERSION 1,36,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,16 +69,16 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "FileDescription", "ActiveX hosting plugin for Firefox r35"
+            VALUE "FileDescription", "ActiveX hosting plugin for Firefox r36"
             VALUE "FileExtents", "ocx"
             VALUE "FileOpenName", "ActiveX (*.ocx)"
-            VALUE "FileVersion", "r35"
+            VALUE "FileVersion", "r36"
             VALUE "InternalName", "ffactivex.dll"
             VALUE "LegalCopyright", "(c) IT Structures Ltd.  All rights reserved."
             VALUE "MIMEType", "application/x-itst-activex"
             VALUE "OriginalFilename", "ffactivex.dll"
             VALUE "ProductName", "ActiveX hosting plugin for Firefox"
-            VALUE "ProductVersion", "r35"
+            VALUE "ProductVersion", "r36"
         END
     END
     BLOCK "VarFileInfo"
