@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 #include <atlbase.h>
+#include <atlsafe.h>
 #include <npapi.h>
 #include <npfunctions.h>
 #include <prtypes.h>
@@ -377,7 +378,7 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 #undef GETVALUE
 
 void
-NPVar2Variant(const NPVariant *npvar, VARIANT *var)
+NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 {
 	USES_CONVERSION;
 
@@ -418,9 +419,38 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var)
 		break;
 
 	case NPVariantType_Object:
-		// An object of type NPObject - currently not supported.
-		var->vt = VT_VOID;
-		var->ulVal = 0;
+		NPIdentifier *identifiers = NULL;
+		uint32_t identifierCount = 0;
+		NPObject *object = NPVARIANT_TO_OBJECT(*npvar);
+
+		if (NPNFuncs.enumerate(instance, object, &identifiers, &identifierCount)) {
+			CComSafeArray<VARIANT> variants;
+
+			for (uint32_t index = 0; index < identifierCount; ++index) {
+				NPVariant npVariant;
+
+				if (NPNFuncs.getproperty(instance, object, identifiers[index], &npVariant)) {
+
+					if (npVariant.type != NPVariantType_Object) {
+
+						CComVariant variant;
+
+						NPVar2Variant(&npVariant, &variant, instance);
+						variants.Add(variant);
+					}
+
+					NPNFuncs.releasevariantvalue(&npVariant);
+				}
+			}
+
+			NPNFuncs.memfree(identifiers);
+			*reinterpret_cast<CComVariant*>(var) = variants;
+		}
+		else {
+
+			var->vt = VT_VOID;
+			var->ulVal = 0;
+		}
 		break;
 	}
 }

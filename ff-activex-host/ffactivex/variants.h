@@ -34,6 +34,6 @@
 #pragma once
 
 void Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance);
-void NPVar2Variant(const NPVariant *npvar, VARIANT *var);
+void NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance);
 BSTR Utf8StringToBstr(LPCSTR szStr, int iSize);
 

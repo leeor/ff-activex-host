@@ -239,7 +239,7 @@ CControlEventSink::InternalInvoke(DISPID dispIdMember, REFIID riid, LCID lcid, W
 
 		if (pVarResult) {
 			// set the result
-			NPVar2Variant(&result, pVarResult);
+			NPVar2Variant(&result, pVarResult, instance);
 		}
 
 		NPNFuncs.releasevariantvalue(&result);

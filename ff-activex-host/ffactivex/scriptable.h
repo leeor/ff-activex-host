@@ -272,7 +272,7 @@ public:
 			for (unsigned int i = 0; i < argCount; ++i) {
 
 				// copy the arguments in reverse order
-				NPVar2Variant(&args[i], &vArgs[argCount - i - 1]);
+				NPVar2Variant(&args[i], &vArgs[argCount - i - 1], instance);
 			}
 		}
 
@@ -344,7 +344,7 @@ public:
 		}
 
 		VARIANT val;
-		NPVar2Variant(value, &val);
+		NPVar2Variant(value, &val, instance);
 
 		DISPPARAMS params;
 		// Special initialization needed when using propery put.
