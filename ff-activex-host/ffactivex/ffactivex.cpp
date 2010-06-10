@@ -429,6 +429,8 @@ NPP_Destroy(NPP instance, NPSavedData **save)
 		return NPERR_INVALID_PARAM;
 	}
 
+	log(instance, 0, "NPP_Destroy: destroying the control...");
+
 	CAxHost *host = (CAxHost *)instance->pdata;
 	delete host;
 	instance->pdata = NULL;
@@ -454,11 +456,11 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 
 	host->setWindow((HWND)window->window);
 
-	rcPos.left = window->clipRect.left;
-	rcPos.top = window->clipRect.top;
-	rcPos.right = window->clipRect.right;
-	rcPos.bottom = window->clipRect.bottom;
+	rcPos.left = 0;
+	rcPos.top = 0;
+	rcPos.right = window->width;
+	rcPos.bottom = window->height;
 	host->UpdateRect(rcPos);
-  
+
 	return NPERR_NO_ERROR;
 }

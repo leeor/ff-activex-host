@@ -52,7 +52,7 @@ static const char *WellKnownClsIds[] = {
 #endif
 
 static const bool AcceptOnlyWellKnown = false;
-static const bool TrustWellKnown = false;
+static const bool TrustWellKnown = true;
 
 static bool
 isWellKnownProgId(const char *progid)
@@ -144,6 +144,8 @@ static LRESULT CALLBACK AxHostWinProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 
 CAxHost::~CAxHost()
 {
+	log(instance, 0, "AxHost.~AXHost: destroying the control...");
+
 	if (Window){
 
 		if (OldProc)
@@ -173,6 +175,7 @@ CAxHost::CAxHost(NPP inst):
 	isValidClsID(false),
 	Sink(NULL),
 	Site(NULL),
+	Window(NULL),
 	OldProc(NULL),
 	Props(),
 	isKnown(false),
