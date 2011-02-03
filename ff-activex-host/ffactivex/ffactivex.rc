@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -53,8 +51,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,36,0,0
- PRODUCTVERSION 1,36,0,0
+ FILEVERSION 1,37,0,0
+ PRODUCTVERSION 1,37,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -69,16 +67,16 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "FileDescription", "ActiveX hosting plugin for Firefox r36"
+            VALUE "FileDescription", "ActiveX hosting plugin for Firefox r37"
             VALUE "FileExtents", "ocx"
             VALUE "FileOpenName", "ActiveX (*.ocx)"
-            VALUE "FileVersion", "r36"
+            VALUE "FileVersion", "r37"
             VALUE "InternalName", "ffactivex.dll"
-            VALUE "LegalCopyright", "(c) IT Structures Ltd.  All rights reserved."
+            VALUE "LegalCopyright", "(c) CloudShare Ltd.  All rights reserved."
             VALUE "MIMEType", "application/x-itst-activex"
             VALUE "OriginalFilename", "ffactivex.dll"
             VALUE "ProductName", "ActiveX hosting plugin for Firefox"
-            VALUE "ProductVersion", "r36"
+            VALUE "ProductVersion", "r37"
         END
     END
     BLOCK "VarFileInfo"
@@ -87,7 +85,7 @@ BEGIN
     END
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
