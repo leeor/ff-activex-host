@@ -80,7 +80,7 @@ ffax_free(void *ptr)
 //
 
 static unsigned int log_level = 0;
-static char *logger = "console.log";
+static char *logger = NULL;
 
 void
 log(NPP instance, unsigned int level, char *message, ...)
@@ -96,7 +96,7 @@ log(NPP instance, unsigned int level, char *message, ...)
 
 	va_list list;
 
-	if (level > log_level) {
+	if (!logger || (level > log_level)) {
 
 		return;
 	}

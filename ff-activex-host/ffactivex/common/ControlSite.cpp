@@ -395,14 +395,14 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         //Call CoGetClassObjectFromURL with CLSID_NULL to prevent system change reboot prompt 
         if(bUpdateControlVersion)
         {
-            hr = CoGetClassObjectFromURL(clsid, szURL, dwFileVersionMS, dwFileVersionLS, 
+			hr = CoGetClassObjectFromURL(CLSID_NULL, szCodebase, dwFileVersionMS, dwFileVersionLS, 
                                          NULL, spBindContext, 
                                          CLSCTX_INPROC_HANDLER | CLSCTX_INPROC_SERVER, 
                                          0, IID_IClassFactory, NULL);
         }
         else
         {
-            hr = CoGetClassObjectFromURL(CLSID_NULL, szURL, dwFileVersionMS, dwFileVersionLS,
+			hr = CoGetClassObjectFromURL(clsid, szURL, dwFileVersionMS, dwFileVersionLS,
                                          NULL, spBindContext, CLSCTX_ALL, NULL, IID_IUnknown, 
                                          NULL);
         }
@@ -478,6 +478,7 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
     }    
     return hr;
 }
+
 
 // Attach the created control to a window and activate it
 HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInitStream)
