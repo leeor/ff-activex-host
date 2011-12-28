@@ -1,6 +1,7 @@
 {
     // Required
     "name": "ActiveX hosting plugin",
+    "homepage_url": "http://code.google.com/p/ff-activex-host/",
     "version": "1.38",
 
     // Recommended

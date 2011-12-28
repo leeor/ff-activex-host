@@ -318,12 +318,12 @@ NPP_New(NPMIMEType pluginType,
 				// The class id of the control we are asked to load
 				host->setClsIDFromProgID(argv[i]);
 			}
-			else if (0 == strnicmp(argn[i], PARAM_DEBUG, strlen(PARAM_PROGID))) {
+			else if (0 == strnicmp(argn[i], PARAM_DEBUG, strlen(PARAM_DEBUG))) {
 				// Logging verbosity
 				log_level = atoi(argv[i]);
 				log(instance, 0, "AxHost.NPP_New: debug level set to %d", log_level);
 			}
-			else if (0 == strnicmp(argn[i], PARAM_LOGGER, strlen(PARAM_PROGID))) {
+			else if (0 == strnicmp(argn[i], PARAM_LOGGER, strlen(PARAM_LOGGER))) {
 				// Logger function
 				logger = strdup(argv[i]);
 			}

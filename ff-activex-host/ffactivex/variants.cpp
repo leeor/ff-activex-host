@@ -92,21 +92,21 @@ BSTR2NPVar(BSTR bstr, NPVariant *npvar, NPP instance)
 {
 	USES_CONVERSION;
 	char *npStr = NULL;
-  size_t sourceLen;
-  size_t bytesNeeded;
+	size_t sourceLen;
+	size_t bytesNeeded;
 
-  sourceLen = lstrlenW(bstr);
+	sourceLen = lstrlenW(bstr);
 
-  bytesNeeded = WideCharToMultiByte(CP_UTF8,
-                                    0,
-                                    bstr,
-                                    sourceLen,
-                                    NULL,
-                                    0,
-                                    NULL,
-                                    NULL);
+	bytesNeeded = WideCharToMultiByte(CP_UTF8,
+									  0,
+									  bstr,
+									  sourceLen,
+									  NULL,
+									  0,
+									  NULL,
+									  NULL);
 
-  bytesNeeded += 1;
+	bytesNeeded += 1;
 
 	// complete lack of documentation on Mozilla's part here, I have no
 	// idea how this string is supposed to be freed
@@ -115,14 +115,14 @@ BSTR2NPVar(BSTR bstr, NPVariant *npvar, NPP instance)
 
 		memset(npStr, 0, bytesNeeded);
 
-    WideCharToMultiByte(CP_UTF8,
-                        0,
-                        bstr,
-                        sourceLen,
-                        npStr,
-                        bytesNeeded - 1,
-                        NULL,
-                        NULL);
+		WideCharToMultiByte(CP_UTF8,
+							0,
+							bstr,
+							sourceLen,
+							npStr,
+							bytesNeeded - 1,
+							NULL,
+							NULL);
 		
 		STRINGZ_TO_NPVARIANT(npStr, (*npvar));
 	}
@@ -304,11 +304,6 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 	VOID_TO_NPVARIANT(*npvar);
 
 	switch (var->vt & ~VT_BYREF) {
-	case VT_ARRAY:
-		obj = SafeArray2NPObject(GETVALUE(var, parray), 0, NULL, instance);
-		OBJECT_TO_NPVARIANT(obj, (*npvar));
-		break;
-
 	case VT_EMPTY:
 		VOID_TO_NPVARIANT((*npvar));
 		break;
@@ -370,8 +365,22 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		Unknown2NPVar(GETVALUE(var, punkVal), npvar, instance);
 		break;
 
+	case VT_CY:
+		DOUBLE_TO_NPVARIANT((double)GETVALUE(var, cyVal).int64 / 10000, (*npvar));
+		break;
+
+	case VT_DATE:
+		BSTR bstrVal;
+		VarBstrFromDate(GETVALUE(var, date), 0, 0, &bstrVal);
+		BSTR2NPVar(bstrVal, npvar, instance);
+		break;
+
 	default:
-		// Some unsupported type
+		if (var->vt & VT_ARRAY) {
+
+			obj = SafeArray2NPObject(GETVALUE(var, parray), 0, NULL, instance);
+			OBJECT_TO_NPVARIANT(obj, (*npvar));
+		}
 		break;
 	}
 }

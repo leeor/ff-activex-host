@@ -113,7 +113,6 @@ private:
 					continue;
 				}
 
-				baseInfo->AddRef();
 				if (FAILED(baseInfo->GetTypeAttr(&baseAttr))) {
 
 					continue;
@@ -145,16 +144,12 @@ private:
 
 		NPUTF8 *npname = NPNFuncs.utf8fromidentifier(name);
 		LPOLESTR oleName = A2W(npname);
-		//free(npname);
-		//npname = NULL;
 
 		IDispatchPtr disp = control.GetInterfacePtr();
 		if (!disp) {
 
 			return -1;
 		}
-
-		disp->AddRef();
 
 		disp->GetIDsOfNames(IID_NULL, &oleName, 1, LOCALE_SYSTEM_DEFAULT, &dID);
 		if (dID != -1) {
@@ -165,8 +160,6 @@ private:
 
 				return -1;
 			}
-
-			info->AddRef();
 
 			TYPEATTR *attr;
 			if (FAILED(info->GetTypeAttr(&attr))) {
@@ -188,8 +181,6 @@ private:
 
 			return false;
 		}
-
-		disp->AddRef();
 
 		HRESULT hr = disp->Invoke(id, IID_NULL, LOCALE_SYSTEM_DEFAULT, wFlags, pDispParams, pVarResult, NULL, NULL);
 
