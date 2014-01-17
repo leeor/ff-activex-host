@@ -1,4 +1,5 @@
-How to use this plugin
+The contents of this file were written long ago. Most, if not all, of the
+references to Firefox hold true for Chrome as well.
 
 # Introduction
 
