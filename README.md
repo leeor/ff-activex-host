@@ -1,17 +1,15 @@
-The contents of this file were written long ago. Most, if not all, of the
-references to Firefox hold true for Chrome as well.
+_The contents of this file were written long ago. Most, if not all, of the
+references to Firefox hold true for Chrome as well_.
 
 # Introduction
 
 This plugin was written to try and reduce the gap between IE and FF when it comes to content that can be used in web applications. Sometimes, to create an ideal user experience you have to be able to use some native code. Many times that native code already exists in the form of an ActiveX control.
 
-# Compatibility
-
-This plugin has been tested with FF versions 3.0 through 3.1.`*`, and is compatible.
+The plugin registers its own MIME Type - meaning that currently web pages need to be written with this plugin in mind. It does not work transparently in sites that use ActiveX objects.
 
 # Security
 
-The lack of support for ActiveX controls in FF is definitely one of its strong point where security is concerned. This plugin does not aim to reduce the security of FF. To that end several measures have been taken:
+The lack of support for ActiveX controls in FF is definitely one of its strong points where security is concerned. This plugin does not aim to reduce the security of FF. To that end several measures have been taken:
 
 * The plugin *will not* work on regular object tags that are used to embed ActiveX controls in IE.
 * The plugin can be compiled with a list of trusted domains that will be allowed to use it. It will refuse to load ActiveX objects for any other domain.
@@ -89,12 +87,12 @@ FF invokes plugins for rendering content by matching the MIME type of that conte
 </object>
 ```
 
-  * `type`: the MIME Type the plugin is associated with.
-  * `clsid`: is the CLSID of the control you wish the plugin to load.
-  * `progid`: is the PROGID of the control you with the plugin to load.
-  * `event_XXX`: tells the plugin to bind the event `XXX` to the Javascript function given as value.
-  * `param_XXX`: requests that the plugin will invoke the requested ActiveX control with the parameter named `XXX` and set its value accordingly.
-  * `codeBaseURL`: may be used to provide a location from which the plugin will download and install a CAB containing the needed ActiveX control.
+* `type`: the MIME Type the plugin is associated with.
+* `clsid`: is the CLSID of the control you wish the plugin to load.
+* `progid`: is the PROGID of the control you with the plugin to load.
+* `event_XXX`: tells the plugin to bind the event `XXX` to the Javascript function given as value.
+* `param_XXX`: requests that the plugin will invoke the requested ActiveX control with the parameter named `XXX` and set its value accordingly.
+* `codeBaseURL`: may be used to provide a location from which the plugin will download and install a CAB containing the needed ActiveX control.
 
 There is no need to provide both a `clsid` and a `progid`, the above is done only for the purpose of demonstration.
 
@@ -109,3 +107,6 @@ Check that your control is marked as 'Safe for Scripting'. The only way to load 
 # Final Note
 
 If you find this plugin useful and decide to use it, I'd love it if you drop me a line and tell me about it.
+
+# Author
+Developed by Leeor Aharon, at [CloudShare Ltd](http://www.cloudshare.com).
