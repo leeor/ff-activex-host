@@ -99,7 +99,7 @@ There is no need to provide both a `clsid` and a `progid`, the above is done onl
 
 # Troubleshooting
 
-First of all, get [http://getfirebug.com/ Firebug]. Aside from being an invaluable tool for developing with FF, this plugin can print debug messages to Firebug's console.
+First of all, get [Firebug](http://getfirebug.com/). Aside from being an invaluable tool for developing with FF, this plugin can print debug messages to Firebug's console.
 
 ## Error Message: failed to create site
 
