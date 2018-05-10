@@ -110,3 +110,8 @@ If you find this plugin useful and decide to use it, I'd love it if you drop me 
 
 # Author
 Developed by Leeor Aharon, at [CloudShare Ltd](http://www.cloudshare.com).
+
+## Links
+
+- https://code.google.com/p/ff-activex-host/
+
